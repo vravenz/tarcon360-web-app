@@ -1,0 +1,26 @@
+import React from 'react';
+import Navbar from '../../../components/Navbar';
+import SideNavbar from '../../../components/SideNavbar';
+import TwoColumnLayout from '../../../components/TwoColumnLayout';
+import Card from '../../../components/Card';
+
+const RoasterPage: React.FC = () => {
+    return (
+        <div>
+            <Navbar />
+            <TwoColumnLayout
+                sidebarContent={<SideNavbar />}
+                mainContent={
+                    <div className="md:grid md:grid-cols-1 md:gap-4">
+                        <Card className="p-6 bg-white shadow rounded-lg">
+                            <h1 className="text-2xl font-bold mb-4">Welcome to Roaster Schedule</h1>
+                            <p>This is where you can view and manage roaster schedules.</p>
+                        </Card>
+                    </div>
+                }
+            />
+        </div>
+    );
+};
+
+export default RoasterPage;
