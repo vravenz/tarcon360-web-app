@@ -63,6 +63,9 @@ import TermsAndConditionsPage from './pages/protected/terms-and-conditions/Terms
 import PrivacyPolicyPage from './pages/protected/privacy-policy/PrivacyPolicyPage';
 import ContactUsPage from './pages/protected/contact-us/ContactUsPage';
 
+import Profile from './pages/protected/staff/Profile';
+import StaffStats from './pages/protected/staff/StaffStats';
+
 import PrivateRoute from './components/PrivateRoute';
 import { ThemeProvider } from './context/ThemeContext';
 import './index.css';
@@ -145,6 +148,9 @@ const App = () => {
             <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
             <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route path="/contact-us" element={<ContactUsPage />} />
+
+            <Route path="/staff/profile" element={<Profile />} />
+            <Route path="/staff/stats" element={<StaffStats />} />
 
           </Route>
         </Routes>

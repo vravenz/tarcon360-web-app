@@ -24,6 +24,7 @@ import telemetryRoutes from './routes/telemetryRoutes';
 import etaRoutes from './routes/etaRoutes';
 import bookOnOffRoutes from './routes/bookOnOffRoutes';
 import invoiceRoutes from './routes/invoiceRoutes';
+import statsRoutes from './routes/statsRoutes';
 
 // Load environment variables
 dotenv.config();
@@ -82,6 +83,8 @@ app.use('/api/tracking', telemetryRoutes);
 app.use('/api/tracking', etaRoutes);
 app.use('/api/tracking', bookOnOffRoutes);
 app.use('/api', invoiceRoutes);
+app.use('/api/stats', statsRoutes);
+
 // Mobile API (versioned)
 app.use('/api/mobile/v1', mobileV1Routes);
 
