@@ -57,12 +57,12 @@ const AuthForm: React.FC<Props> = ({ type }) => {
     try {
       let response;
       switch (type) {
+        case 'login':
+          response = await axios.post(API_URL + 'login', { identifier: email, password });
+          break;
         case 'register':
           response = await axios.post(API_URL + 'register', { company: companyData, email, password });
           setUserPin(response.data.user_pin);
-          break;
-        case 'login':
-          response = await axios.post(API_URL + 'login', { identifier: email, password });
           break;
         case 'subcontractor':
           response = await axios.post(API_URL + 'register', { company: companyData, email, password });

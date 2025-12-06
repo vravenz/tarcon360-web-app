@@ -32,7 +32,7 @@ const AuthPage: React.FC = () => {
           >
             <Text color={currentForm === 'login' ? 'primary' : 'secondary'}>Login</Text>
           </button>
-          <button
+          {/* <button
             className={getButtonClass(currentForm === 'register')}
             onClick={() => handleNavigation('register')}
           >
@@ -43,7 +43,7 @@ const AuthPage: React.FC = () => {
             onClick={() => handleNavigation('subcontractor')}
           >
             <Text color={currentForm === 'subcontractor' ? 'primary' : 'secondary'}>Subcontractor</Text>
-          </button>
+          </button> */}
         </div>
         {currentForm === 'login' ? <AuthForm type="login" /> :
          currentForm === 'register' ? <AuthForm type="register" /> :
