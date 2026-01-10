@@ -19,16 +19,22 @@ interface Client {
 }
 
 interface Group {
-    group_id: string;
-    site_group_name: string;
+  group_id: string;
+  site_group_name: string;
+
+  billable_guard_rate?: string | number | null;
+  billable_supervisor_rate?: string | number | null;
+  payable_guard_rate?: string | number | null;
+  payable_supervisor_rate?: string | number | null;
 }
+
 
 interface SiteForm {
     client_id: string;
     group_id: string;
     site_name: string;
-    contact_person: string;
-    contact_number: string;
+    contact_person?: string;
+    contact_number?: string;
     site_address: string;   
     post_code: string; 
     weekly_contracted_hours: number;
@@ -44,6 +50,11 @@ interface SiteForm {
     site_longitude?: number;
     site_radius?: number;
 }
+
+const toNum = (v: unknown, fallback = 0) => {
+  const n = typeof v === "number" ? v : parseFloat(String(v ?? ""));
+  return Number.isFinite(n) ? n : fallback;
+};
 
 const AddSitePage: React.FC = () => {
     const { companyId } = useAuth();
@@ -108,12 +119,24 @@ const AddSitePage: React.FC = () => {
         }
     };
 
-    const handleGroupChange = (event: React.ChangeEvent<HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement>) => {
-        const group_id = (event.target as HTMLSelectElement).value;
-        setFormData(prev => ({
-            ...prev,
-            group_id
-        }));
+    const handleGroupChange = (
+    event: React.ChangeEvent<HTMLSelectElement | HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+    const group_id = (event.target as HTMLSelectElement).value;
+
+    const selected = groups.find(g => String(g.group_id) === String(group_id));
+
+    setFormData(prev => ({
+        ...prev,
+        group_id,
+
+        // ✅ Copy group rates into site form fields
+        site_billable_rate_guarding: selected ? toNum(selected.billable_guard_rate, prev.site_billable_rate_guarding) : prev.site_billable_rate_guarding,
+        site_payable_rate_guarding: selected ? toNum(selected.payable_guard_rate, prev.site_payable_rate_guarding) : prev.site_payable_rate_guarding,
+
+        site_billable_rate_supervisor: selected ? toNum(selected.billable_supervisor_rate, prev.site_billable_rate_supervisor) : prev.site_billable_rate_supervisor,
+        site_payable_rate_supervisor: selected ? toNum(selected.payable_supervisor_rate, prev.site_payable_rate_supervisor) : prev.site_payable_rate_supervisor,
+    }));
     };
 
     const handleChange = (
@@ -187,8 +210,8 @@ const AddSitePage: React.FC = () => {
                             <Card className="md:col-span-2 p-6 space-y-4">
                                 <h1 className="text-2xl font-bold mb-4">Add Sites</h1>
                                 <InputField type="text" name="site_name" value={formData.site_name} onChange={handleChange} label="Site Name" required />
-                                <InputField type="text" name="contact_person" value={formData.contact_person} onChange={handleChange} label="Contact Person" required />
-                                <InputField type="text" name="contact_number" value={formData.contact_number} onChange={handleChange} label="Contact Number" required />
+                                <InputField type="text" name="contact_person" value={formData.contact_person ?? ""} onChange={handleChange} label="Contact Person" />
+                                <InputField type="text" name="contact_number" value={formData.contact_number ?? ""} onChange={handleChange} label="Contact Number" />
                                 <InputField type="text" name="site_address" value={formData.site_address} onChange={handleChange} label="Site Address" required />
                                 <InputField type="text" name="post_code" value={formData.post_code} onChange={handleChange} label="Post Code" required />
                                 <InputField type="number" name="weekly_contracted_hours" value={formData.weekly_contracted_hours} onChange={handleChange} label="Weekly Contracted Hours" required />
@@ -283,7 +306,7 @@ const AddSitePage: React.FC = () => {
                             </div>
                         </div>
                         <div className="flex justify-end">
-                            <Button type="submit" color="submit" icon='plus' size='small'></Button>
+                            <Button type="submit" color="submit" icon='plus' size='small' marginRight='4px'>Save</Button>
                         </div>
                     </form>
                     {message && <p className="text-red-500">{message}</p>}

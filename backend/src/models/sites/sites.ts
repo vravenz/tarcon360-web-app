@@ -4,8 +4,8 @@ export interface Site {
     client_id: number;
     group_id: number;
     site_name: string;
-    contact_person: string;
-    contact_number: string;
+    contact_person?: string | null;
+    contact_number?: string | null;
     site_address: string; 
     post_code: string; 
     weekly_contracted_hours: number; 
@@ -22,6 +22,13 @@ export interface Site {
     site_radius?: number | null;
     site_group?: string;
 }
+
+const toNull = (v: any) => {
+  if (v === undefined || v === null) return null;
+  const s = String(v).trim();
+  return s.length ? s : null;
+};
+
 
 // Insert Site
 export const insertSite = async (site: Site): Promise<Site> => {
@@ -46,7 +53,7 @@ export const insertSite = async (site: Site): Promise<Site> => {
             RETURNING *;
         `;
         const values = [
-            client_id, group_id, site_name, contact_person, contact_number,
+            client_id, group_id, site_name,  toNull(contact_person), toNull(contact_number),
             site_address, post_code, weekly_contracted_hours, trained_guards_required,
             site_billable_rate_guarding, site_billable_rate_supervisor,
             site_payable_rate_guarding, site_payable_rate_supervisor, site_note,
