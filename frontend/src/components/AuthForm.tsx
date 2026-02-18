@@ -91,9 +91,23 @@ const AuthForm: React.FC<Props> = ({ type }) => {
             break;
         }
       }
-    } catch (error: any) {
-      setError(error.response?.data?.error || 'Something went wrong');
-    }
+   } catch (err: any) {
+  const data = err?.response?.data;
+
+  const msg =
+    typeof data?.error === "string"
+      ? data.error
+      : typeof data?.message === "string"
+      ? data.message
+      : typeof data?.error?.message === "string"
+      ? data.error.message
+      : typeof err?.message === "string"
+      ? err.message
+      : "Something went wrong";
+
+  setError(msg);
+}
+
   };
 
   return (
