@@ -1,0 +1,8 @@
+{
+  "name": "tarcon-360",
+  "private": true,
+  "workspaces": ["frontend", "backend"],
+  "scripts": {
+    "build": "CI=false npm --workspace frontend run build"
+  }
+}
