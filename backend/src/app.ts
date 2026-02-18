@@ -56,14 +56,6 @@ app.use((req, _res, next) => {
   next();
 });
 
-app.get("/health", (req, res) => {
-  res.json({
-    ok: true,
-    hasDb: !!process.env.DATABASE_URL,
-    hasJwt: !!process.env.JWT_SECRET,
-  })
-})
-
 
 app.use(express.json())
 
