@@ -51,6 +51,11 @@ app.use(
   })
 );
 
+app.use((req, _res, next) => {
+  console.log("INCOMING:", req.method, req.url);
+  next();
+});
+
 app.use(express.json())
 
 // extract userId middleware
