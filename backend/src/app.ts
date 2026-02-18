@@ -35,7 +35,22 @@ process.env.TZ = process.env.APP_TIMEZONE || "Asia/Karachi"
 
 const app: Express = express()
 
-app.use(cors())
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+];
+
+app.use(
+  cors({
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true); // server-to-server / curl
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(null, true); // ✅ allow Vercel same-origin (no CORS needed)
+    },
+    credentials: true,
+  })
+);
+
 app.use(express.json())
 
 // extract userId middleware
