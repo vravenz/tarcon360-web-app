@@ -38,6 +38,7 @@ import SubcontractorApplicationPage from './pages/subcontractors/SubcontractorAp
 import ClientsPage from './pages/protected/clients/ClientsPage';
 import AddClientPage from './pages/protected/clients/AddClientPage';
 import ClientDetailPage from './pages/protected/clients/ClientDetailPage';
+import EditClientPage from './pages/protected/clients/EditClientPage';
 
 // Sites
 import AddSitePage from './pages/protected/sites/AddSites';
@@ -121,6 +122,7 @@ const App = () => {
             <Route path="/clients" element={<ClientsPage />} />
             <Route path="/clients/add" element={<AddClientPage />} />
             <Route path="/client/detail/:clientId" element={<ClientDetailPage />} />
+            <Route path="/client/edit/:clientId" element={<EditClientPage />} />
 
             {/* Sites */}
             <Route path="/sites/add" element={<AddSitePage />} />

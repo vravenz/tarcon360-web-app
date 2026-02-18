@@ -6,6 +6,7 @@ interface TokenPayload {
   role: string;
   company_id: number;
   branch_id: number;
+  source?: "web" | "mobile"
 }
 
 export const generateToken = (payload: Partial<TokenPayload>): string => {

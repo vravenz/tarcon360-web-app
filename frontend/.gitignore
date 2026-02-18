@@ -1,0 +1,26 @@
+# deps
+node_modules
+
+# env
+.env
+.env.*
+backend/.env
+frontend/.env
+frontend/.env.*
+
+# builds
+dist
+build
+.vercel
+
+# uploads (local only; in prod use Supabase Storage)
+uploads
+backend/src/uploads
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# misc
+.DS_Store

@@ -1,12 +1,24 @@
-import express from 'express';
-import { addSite, fetchSite, fetchAllSites, fetchSitesByClient } from '../controllers/sites/sitesController';
+import express from "express"
+import {
+  addSite,
+  fetchSite,
+  fetchAllSites,
+  fetchSitesByClient,
 
-const router = express.Router();
+  // NEW
+  listSiteGuards,
+  setSiteGuardBlock,
+} from "../controllers/sites/sitesController"
 
-// Route definitions for site operations
-router.post('/sites', addSite);
-router.get('/sites/:siteId', fetchSite); // Route to fetch a specific site by ID
-router.get('/sites', fetchAllSites); // New route to fetch all sites
-router.get('/clients/:clientId/sites', fetchSitesByClient);
+const router = express.Router()
 
-export default router;
+router.post("/sites", addSite)
+router.get("/sites/:siteId", fetchSite)
+router.get("/sites", fetchAllSites)
+router.get("/clients/:clientId/sites", fetchSitesByClient)
+
+// NEW: site-level ban/unban
+router.get("/sites/:siteId/guards", listSiteGuards)
+router.patch("/sites/:siteId/guards/:applicantId/block", setSiteGuardBlock)
+
+export default router

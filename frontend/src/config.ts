@@ -1,34 +1,11 @@
-// // frontend/src/config.ts
-// const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:4000';
-// const STATIC_URL = process.env.REACT_APP_STATIC_URL || 'http://localhost';
+// frontend/src/config.ts
 
-// export { BACKEND_URL, STATIC_URL };
+// Local dev: CRA usually runs on 3000, backend on 4000
+const isLocal = typeof window !== "undefined" && window.location.hostname === "localhost"
 
-// // const BACKEND_URL =
-// //   process.env.REACT_APP_BACKEND_URL || 'http://162.0.225.181:4000';
-// // const STATIC_URL =
-// //   process.env.REACT_APP_STATIC_URL || 'http://162.0.225.181';
+// ✅ Use same-origin on production (Vercel): backend is /api on same domain
+export const BACKEND_URL = isLocal ? "http://localhost:4000" : ""
 
-// // export { BACKEND_URL, STATIC_URL };
-
-
-// Auto-detect environment
-const isBrowser = typeof window !== "undefined";
-const isProduction = isBrowser && !window.location.hostname.includes("localhost");
-
-// Auto backend URL resolution
-let BACKEND_URL = "http://localhost:4000"; // default for local dev
-let STATIC_URL = "http://localhost";
-
-if (isProduction) {
-  // Automatically use VPS origin for production
-  const origin = window.location.origin; // e.g. http://159.198.46.146
-  BACKEND_URL = `${origin}:4000`;        // backend on port 4000
-  STATIC_URL = origin;
-}
-
-// Allow .env to override (optional)
-BACKEND_URL = process.env.REACT_APP_BACKEND_URL || BACKEND_URL;
-STATIC_URL = process.env.REACT_APP_STATIC_URL || STATIC_URL;
-
-export { BACKEND_URL, STATIC_URL };
+// For static files, stop using VPS/static URL.
+// Use Supabase Storage public URL instead.
+export const STATIC_URL = isLocal ? "http://localhost:4000" : ""

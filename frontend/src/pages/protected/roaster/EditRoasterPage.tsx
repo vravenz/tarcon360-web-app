@@ -264,6 +264,13 @@ const EditRosterShiftPage: React.FC = () => {
     setRemovalReason('');
   };
 
+  const handleViewRoster = () => {
+    const rosterId = shiftData?.roster_id || rosterData?.roster_id;
+    if (!rosterId) return;
+    navigate(`/rosters/view/${rosterId}`);
+  };
+
+
   // Confirm removal of the assigned employee.
   const handleConfirmRemoveEmployee = async () => {
     if (!assignmentData) {
@@ -627,6 +634,22 @@ const EditRosterShiftPage: React.FC = () => {
               </Card>
             </div>
           </div>
+
+          <div className="flex items-center justify-between mb-4">
+  <h1 className="text-xl font-bold">Edit Shift</h1>
+
+  <Button
+    type="button"
+    size="small"
+    color="view"
+    icon="view"
+    onClick={handleViewRoster}
+    disabled={!shiftData?.roster_id && !rosterData?.roster_id}
+  >
+    View Roster
+  </Button>
+</div>
+
 
           {/* Submit button to update shift */}
           <div className="flex justify-end">

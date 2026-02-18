@@ -6,7 +6,9 @@ import multer from 'multer';
 import pool from '../../config/database';
 
 const UPLOAD_DIR =
-  process.env.BOOK_PHOTO_DIR || path.resolve(process.cwd(), 'uploads', 'book_photos');
+  process.env.BOOK_PHOTO_DIR ||
+  path.resolve(process.cwd(), 'src', 'uploads', 'book_photos');
+
 
 async function ensureUploadDir() {
   await fs.mkdir(UPLOAD_DIR, { recursive: true });

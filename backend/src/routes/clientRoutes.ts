@@ -1,17 +1,51 @@
-import express from 'express';
-import { addClient, fetchClientsByCompanyId, getClientDetails, addClientSiteGroup, fetchClientSiteGroups } from '../controllers/clients/clientsController';
+// src/routes/clients.ts (or wherever this router is)
+import express from "express"
+import {
+  addClient,
+  fetchClientsByCompanyId,
+  getClientDetails,
+  addClientSiteGroup,
+  fetchClientSiteGroups,
+  editClient,
+  editClientSiteGroup,
+  removeClientSiteGroup,
 
-const router = express.Router();
+  // Client Contacts
+  fetchClientContacts,
+  addClientContact,
+  editClientContact,
+  removeClientContact,
 
-// Route to insert a new client
-router.post('/clients', addClient);
-// Route to fetch clients by company ID
-router.get('/clients/company/:companyId', fetchClientsByCompanyId);
-// New route to fetch specific client details
-router.get('/clients/company/:companyId/details/:clientId', getClientDetails);
-// Route to add a new client site group
-router.post('/clients/:clientId/groups', addClientSiteGroup);
-// New route to get all site groups for a specific client
-router.get('/clients/:clientId/groups', fetchClientSiteGroups);
+  // Guards (NEW)
+  listClientGuards,
+  setClientGuardBlock, // ✅ correct export
+} from "../controllers/clients/clientsController"
 
-export default router;
+const router = express.Router()
+
+// Clients
+router.post("/clients", addClient)
+router.get("/clients/company/:companyId", fetchClientsByCompanyId)
+router.get("/clients/company/:companyId/details/:clientId", getClientDetails)
+router.put("/clients/:clientId", editClient)
+
+// Client Site Groups
+router.post("/clients/:clientId/groups", addClientSiteGroup)
+router.get("/clients/:clientId/groups", fetchClientSiteGroups)
+router.put("/clients/:clientId/groups/:groupId", editClientSiteGroup)
+router.delete("/clients/:clientId/groups/:groupId", removeClientSiteGroup)
+
+// Client Contacts
+router.get("/clients/:clientId/contacts", fetchClientContacts)
+router.post("/clients/:clientId/contacts", addClientContact)
+router.put("/clients/:clientId/contacts/:contactId", editClientContact)
+router.delete("/clients/:clientId/contacts/:contactId", removeClientContact)
+
+// ✅ Company applicants list for this client
+router.get("/clients/:clientId/guards", listClientGuards)
+
+// ✅ Block/Unblock applicant for this client only
+// Body: { blocked: true|false }
+router.patch("/clients/:clientId/guards/:applicantId/block", setClientGuardBlock)
+
+export default router
