@@ -1,4 +1,5 @@
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 import crypto from 'crypto';
 import { sendJobOfferEmail } from '../../utils/emailService';
 

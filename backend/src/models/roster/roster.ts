@@ -1,5 +1,6 @@
 // File: models/roster/roster.ts
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 /** ========================
  *  ROSTER TABLE

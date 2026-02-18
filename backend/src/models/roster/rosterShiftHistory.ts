@@ -1,4 +1,5 @@
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 export interface RosterShiftHistory {
   roster_shift_history_id?: number;

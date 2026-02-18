@@ -1,5 +1,6 @@
 import express from 'express';
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 interface InterviewData {
     interview_date: Date;

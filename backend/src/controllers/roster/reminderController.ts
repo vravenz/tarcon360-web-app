@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 /**
  * PUT /api/tracking/eta/:assignmentId

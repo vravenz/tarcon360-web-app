@@ -1,12 +1,19 @@
-import { Pool } from "pg";
+import { Pool } from "pg"
 
-const connectionString =
-  process.env.DATABASE_URL ||
-  "postgresql://postgres:admin3223@localhost/tarcon360-db";
+let pool: Pool | null = null
 
-const pool = new Pool({
-  connectionString,
-  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : undefined,
-});
+export function getPool() {
+  if (pool) return pool
 
-export default pool;
+  const connectionString = process.env.DATABASE_URL || process.env.DATABASE_URL || process.env.DATABASE_URL
+  if (!connectionString) {
+    throw new Error("Missing DATABASE_URL environment variable")
+  }
+
+  pool = new Pool({
+    connectionString,
+    ssl: { rejectUnauthorized: false },
+  })
+
+  return pool
+}

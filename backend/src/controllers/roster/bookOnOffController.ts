@@ -3,7 +3,8 @@ import path from 'path';
 import fs from 'fs/promises';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import multer from 'multer';
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 const UPLOAD_DIR =
   process.env.BOOK_PHOTO_DIR ||

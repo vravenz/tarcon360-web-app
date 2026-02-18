@@ -1,7 +1,8 @@
 // File: src/controllers/subcontractors/subcontractorCreate.ts
 
 import { Request, Response } from 'express';
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 import { hashPassword } from '../../utils/hashUtils';
 import { createUser } from '../../models/user/userModel';
 

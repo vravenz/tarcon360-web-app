@@ -3,7 +3,8 @@
 import { Request, Response } from 'express';
 import { seedCheckCallsForAssignments } from '../../models/roster/rosterShiftCheckCalls';
 import { seedCheckpointsForAssignments }    from '../../models/roster/rosterShiftCheckpoints';
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 // Models
 import {

@@ -1,5 +1,6 @@
 // src/models/superAdmin/superAdminDashboardModel.ts
-import pool from "../../config/database";
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 export type SuperAdminDashboardSummary = {
   core: {

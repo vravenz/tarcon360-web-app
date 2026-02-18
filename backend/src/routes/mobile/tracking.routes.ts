@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express"
-import pool from "../../config/database"
-
+import { getPool } from "../../config/database"
+const pool = getPool()
 const router = Router()
 
 /** Build UTC timestamp from shift_date + scheduled_start_time (which is time w/o tz). */

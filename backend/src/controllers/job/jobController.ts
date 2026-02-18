@@ -4,7 +4,8 @@ import * as ApplicantModel from '../../models/application/applicantModel';
 import { hashPassword } from '../../utils/hashUtils';
 import { createUser } from '../../models/user/userModel';
 import { sendLoginCredentialsEmail } from '../../utils/emailService';
-import pool from '../../config/database'; // ✅ new import
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 // --------------------------------------------------
 // HELPER: create user + PIN + send email for offer

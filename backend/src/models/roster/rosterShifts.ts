@@ -1,6 +1,7 @@
 // File: models/rosterShifts.ts
 
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 export interface RosterShift {
   roster_shift_id?: number;

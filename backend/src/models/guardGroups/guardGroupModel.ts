@@ -1,5 +1,6 @@
 // models/guardGroupModel.ts
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 // Define the interface for GuardGroup
 interface GuardGroup {

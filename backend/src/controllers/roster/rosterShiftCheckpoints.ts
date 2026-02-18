@@ -1,7 +1,8 @@
 // src/controllers/roster/rosterShiftCheckpoints.ts
 import type { RequestHandler } from 'express';
 import { Request, Response } from 'express';
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 import {
   seedCheckpointsForAssignment,
   getCheckpointsByAssignment,

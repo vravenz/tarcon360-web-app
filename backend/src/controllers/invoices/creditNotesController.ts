@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express';
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 const r2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
 

@@ -2,7 +2,8 @@ import { Request, Response } from 'express';
 import { createCompany } from '../../models/company/companyCreate';
 import { createUser } from '../../models/user/userModel';
 import { hashPassword } from '../../utils/hashUtils';
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 const register = async (req: Request, res: Response): Promise<void> => {
   try {

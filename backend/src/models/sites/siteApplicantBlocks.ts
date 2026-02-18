@@ -1,4 +1,5 @@
-import pool from "../../config/database"
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 export interface SiteApplicantRow {
   applicant_id: number

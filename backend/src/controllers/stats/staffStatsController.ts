@@ -1,6 +1,7 @@
 // src/controllers/stats/staffStatsController.ts
 import { RequestHandler } from 'express';
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 const parseDate = (s?: string) => (s ? new Date(s) : undefined);
 

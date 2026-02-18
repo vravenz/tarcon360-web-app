@@ -1,6 +1,7 @@
 // File: models/roster/rosterEmployees.ts
 
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 export interface RosterEmployee {
   roster_employee_id?: number;

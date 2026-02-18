@@ -1,6 +1,7 @@
 // src/controllers/sites/siteCheckpoints.ts
 import { RequestHandler } from 'express'
-import pool from '../../config/database'
+import { getPool } from "../../config/database"
+const pool = getPool()
 import {
   insertCheckpoint,
   getCheckpointsBySite,

@@ -1,5 +1,6 @@
 // backend/src/models/roster/assignmentList.ts
-import pool from '../../config/database';
+import { getPool } from "../../config/database"
+const pool = getPool()
 
 export interface AssignmentListRow {
   roster_shift_assignment_id: number;
