@@ -1,7 +1,7 @@
 // src/controllers/sites/siteCheckpoints.ts
 import { RequestHandler } from 'express'
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 import {
   insertCheckpoint,
   getCheckpointsBySite,
@@ -20,7 +20,7 @@ export const createCheckpointForSite: RequestHandler = async (req, res) => {
 
   let siteRow
   try {
-    const result = await pool.query(
+    const result = await pool().query(
       `SELECT is_mobile_allowed
          FROM sites
         WHERE site_id = $1`,

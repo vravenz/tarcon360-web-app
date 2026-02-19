@@ -1,5 +1,5 @@
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 export interface SiteApplicantRow {
   applicant_id: number
@@ -46,7 +46,7 @@ export const getCompanyApplicantsForSite = async (site_id: number): Promise<Site
     WHERE s.site_id = $1
     ORDER BY a.first_name ASC, a.last_name ASC;
   `
-  const r = await pool.query(q, [site_id])
+  const r = await pool().query(q, [site_id])
   return r.rows
 }
 
@@ -93,7 +93,7 @@ export const setApplicantBlockedForSite = async (
     FROM upsert;
   `
 
-  const r = await pool.query(q, [site_id, applicant_id, blocked])
+  const r = await pool().query(q, [site_id, applicant_id, blocked])
   if (!r.rows?.length) throw new Error("Unable to update site block (site not found?)")
   return r.rows[0]
 }

@@ -1,5 +1,5 @@
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 export interface ClientContactRow {
   contact_id: number
@@ -37,7 +37,7 @@ export const listClientContacts = async (client_id: number): Promise<ClientConta
     WHERE client_id = $1 AND is_deleted = false
     ORDER BY is_primary DESC, contact_id DESC;
   `
-  const r = await pool.query(q, [client_id])
+  const r = await pool().query(q, [client_id])
   return r.rows
 }
 
@@ -47,7 +47,7 @@ export const createClientContact = async (
 ): Promise<ClientContactRow> => {
   // If making primary: unset existing primary
   if (payload.is_primary) {
-    await pool.query(
+    await pool().query(
       `UPDATE client_contacts SET is_primary = false, updated_at = CURRENT_TIMESTAMP
        WHERE client_id = $1 AND is_deleted = false;`,
       [client_id]
@@ -59,7 +59,7 @@ export const createClientContact = async (
     VALUES ($1,$2,$3,$4,$5,$6)
     RETURNING *;
   `
-  const r = await pool.query(q, [
+  const r = await pool().query(q, [
     client_id,
     payload.name,
     payload.phone,
@@ -76,7 +76,7 @@ export const updateClientContact = async (
   patch: ClientContactPatch
 ): Promise<ClientContactRow | null> => {
   if (patch.is_primary === true) {
-    await pool.query(
+    await pool().query(
       `UPDATE client_contacts SET is_primary = false, updated_at = CURRENT_TIMESTAMP
        WHERE client_id = $1 AND is_deleted = false;`,
       [client_id]
@@ -95,7 +95,7 @@ export const updateClientContact = async (
     WHERE client_id = $1 AND contact_id = $2 AND is_deleted = false
     RETURNING *;
   `
-  const r = await pool.query(q, [
+  const r = await pool().query(q, [
     client_id,
     contact_id,
     patch.name ?? null,
@@ -109,7 +109,7 @@ export const updateClientContact = async (
 }
 
 export const softDeleteClientContact = async (client_id: number, contact_id: number): Promise<void> => {
-  await pool.query(
+  await pool().query(
     `UPDATE client_contacts
      SET is_deleted = true, updated_at = CURRENT_TIMESTAMP
      WHERE client_id = $1 AND contact_id = $2;`,

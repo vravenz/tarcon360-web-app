@@ -1,5 +1,5 @@
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 export interface RosterShiftHistory {
   roster_shift_history_id?: number;
@@ -66,7 +66,7 @@ export const insertRosterShiftHistory = async (
     data.updated_by
   ];
   try {
-    const { rows } = await pool.query(query, values);
+    const { rows } = await pool().query(query, values);
     return rows[0];
   } catch (error) {
     console.error('Error inserting roster shift history:', error);

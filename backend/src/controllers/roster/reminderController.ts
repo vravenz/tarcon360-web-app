@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 /**
  * PUT /api/tracking/eta/:assignmentId
@@ -34,7 +34,7 @@ export const updateETA = async (req: Request, res: Response): Promise<void> => {
       WHERE roster_shift_assignment_id = $2
       RETURNING roster_shift_assignment_id, company_id, eta, updated_at
     `;
-    const { rows } = await pool.query(q, [eta, assignmentId]);
+    const { rows } = await pool().query(q, [eta, assignmentId]);
     if (!rows.length) {
       res.status(404).json({ message: 'Assignment not found' });
       return;

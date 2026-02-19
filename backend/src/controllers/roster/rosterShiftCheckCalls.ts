@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 import {
   seedCheckCallsForAssignment,
   getCheckCallsByAssignment
@@ -19,7 +19,7 @@ export const seedCheckCallsSingle = async (req: Request, res: Response) => {
 
   try {
     // look up the shift’s dates & site_id
-    const { rows } = await pool.query(
+    const { rows } = await pool().query(
       `
       SELECT
         ra.roster_shift_assignment_id AS assignment_id,

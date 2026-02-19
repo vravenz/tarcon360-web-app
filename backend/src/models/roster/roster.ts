@@ -1,6 +1,6 @@
 // File: models/roster/roster.ts
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 /** ========================
  *  ROSTER TABLE
@@ -29,7 +29,7 @@ export const insertRoster = async (data: Roster): Promise<Roster> => {
   const values = [company_id, site_id, po_number ?? null];
 
   try {
-    const result = await pool.query(query, values);
+    const result = await pool().query(query, values);
     return result.rows[0];
   } catch (error) {
     console.error('Error inserting roster:', error);
@@ -50,7 +50,7 @@ export const getRosterById = async (roster_id: number): Promise<Roster | null> =
     LIMIT 1;
   `;
   try {
-    const { rows } = await pool.query(query, [roster_id]);
+    const { rows } = await pool().query(query, [roster_id]);
     if (rows.length === 0) return null;
     return rows[0];
   } catch (error) {
@@ -76,7 +76,7 @@ export const getAllRosters = async (): Promise<any[]> => {
     ORDER BY r.roster_id DESC;
   `;
   try {
-    const { rows } = await pool.query(query);
+    const { rows } = await pool().query(query);
     return rows;
   } catch (error) {
     console.error('Error fetching all rosters:', error);
@@ -103,7 +103,7 @@ export const updateRoster = async (roster_id: number, data: Partial<Roster>): Pr
   const values = [company_id ?? null, site_id ?? null, po_number ?? null, roster_id];
 
   try {
-    const { rows } = await pool.query(query, values);
+    const { rows } = await pool().query(query, values);
     if (rows.length === 0) {
       throw new Error(`No roster found with ID ${roster_id}`);
     }
@@ -120,7 +120,7 @@ export const updateRoster = async (roster_id: number, data: Partial<Roster>): Pr
 export const deleteRoster = async (roster_id: number): Promise<void> => {
   const query = `DELETE FROM public.roster WHERE roster_id = $1`;
   try {
-    await pool.query(query, [roster_id]);
+    await pool().query(query, [roster_id]);
   } catch (error) {
     console.error('Error deleting roster:', error);
     throw error;

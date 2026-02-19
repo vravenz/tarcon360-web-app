@@ -1,5 +1,5 @@
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 interface Company {
   company_id?: number;
@@ -32,7 +32,7 @@ export const createCompany = async (
   isSubcontractor: boolean = false
 ): Promise<Company | null> => {
   // Check if the company already exists
-  const check = await pool.query(
+  const check = await pool().query(
     'SELECT 1 FROM companies WHERE company_name = $1',
     [companyName]
   );
@@ -40,7 +40,7 @@ export const createCompany = async (
   if ((check.rowCount ?? 0) > 0) return null;
 
   // Insert a new company if it does not exist
-  const result = await pool.query(
+  const result = await pool().query(
     'INSERT INTO companies (first_name, last_name, company_name, company_address, contact_person, contact_number, contact_department, invoice_terms, payment_terms, vat_registered, vat_registration_number, is_subcontractor) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *',
     [firstName, lastName, companyName, companyAddress, contactPerson, contactNumber, contactDepartment, invoiceTerms, paymentTerms, vatRegistered, vatRegistrationNumber, isSubcontractor]
   );

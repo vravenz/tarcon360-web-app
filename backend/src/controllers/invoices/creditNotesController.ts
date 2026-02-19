@@ -1,11 +1,11 @@
 import type { Request, Response } from 'express';
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 const r2 = (n: number) => Math.round((n + Number.EPSILON) * 100) / 100;
 
 async function nextCreditNumber(companyId: number) {
-  const { rows } = await pool.query(
+  const { rows } = await pool().query(
     `SELECT COUNT(*)::int AS c
      FROM credit_notes cn
      JOIN invoice_groups ig ON ig.invoice_group_id = cn.invoice_group_id
@@ -28,7 +28,7 @@ export async function createCreditNote(req: Request, res: Response) {
     }
 
     // Find group to know company (for numbering)
-    const g = await pool.query(
+    const g = await pool().query(
       `SELECT * FROM invoice_groups WHERE invoice_group_id = $1`,
       [invoice_group_id]
     );
@@ -44,7 +44,7 @@ export async function createCreditNote(req: Request, res: Response) {
     const vat_amount = r2((subtotal * vr) / 100);
     const total = r2(subtotal + vat_amount);
 
-    const ins = await pool.query(
+    const ins = await pool().query(
       `INSERT INTO credit_notes(invoice_group_id, credit_number, reason, vat_rate_pct, subtotal, vat_amount, total)
        VALUES ($1,$2,$3,$4,$5,$6,$7)
        RETURNING credit_note_id`,
@@ -54,7 +54,7 @@ export async function createCreditNote(req: Request, res: Response) {
 
     for (const ln of lines) {
       const line_sub = r2(Number(ln.qty_hours) * Number(ln.unit_rate));
-      await pool.query(
+      await pool().query(
         `INSERT INTO credit_note_items(credit_note_id, site_id, roster_shift_assignment_id, description, role, qty_hours, unit_rate, line_subtotal)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8)`,
         [
@@ -71,11 +71,11 @@ export async function createCreditNote(req: Request, res: Response) {
     }
 
     if (link_invoice_id) {
-      await pool.query(
+      await pool().query(
         `INSERT INTO credit_note_links(credit_note_id, invoice_id) VALUES ($1,$2)`,
         [credit_note_id, Number(link_invoice_id)]
       );
-      await pool.query(
+      await pool().query(
         `INSERT INTO invoice_events(invoice_id, event_type, event_json)
          VALUES ($1,'credited', jsonb_build_object('credit_note_id',$2))`,
         [Number(link_invoice_id), credit_note_id]
@@ -93,10 +93,10 @@ export async function createCreditNote(req: Request, res: Response) {
 export async function getCreditNoteById(req: Request, res: Response) {
   try {
     const { creditNoteId } = req.params;
-    const cn = await pool.query(`SELECT * FROM credit_notes WHERE credit_note_id=$1`, [creditNoteId]);
+    const cn = await pool().query(`SELECT * FROM credit_notes WHERE credit_note_id=$1`, [creditNoteId]);
     if (!cn.rows[0]) { res.status(404).json({ error: 'Credit note not found' }); return; }
 
-    const items = await pool.query(
+    const items = await pool().query(
       `SELECT * FROM credit_note_items WHERE credit_note_id=$1 ORDER BY credit_item_id ASC`,
       [creditNoteId]
     );
@@ -112,7 +112,7 @@ export async function getCreditNoteById(req: Request, res: Response) {
 export async function listCreditsForGroup(req: Request, res: Response) {
   try {
     const { invoiceGroupId } = req.params;
-    const { rows } = await pool.query(
+    const { rows } = await pool().query(
       `SELECT * FROM credit_notes WHERE invoice_group_id=$1 ORDER BY credit_note_id DESC`,
       [invoiceGroupId]
     );

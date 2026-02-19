@@ -1,5 +1,5 @@
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 export interface SiteCheckpoint {
   checkpoint_id?: number;            // serial PK
@@ -44,7 +44,7 @@ export const insertCheckpoint = async (
     scheduled_check_time
   ];
 
-  const result = await pool.query(query, values);
+  const result = await pool().query(query, values);
   return result.rows[0];
 };
 
@@ -68,6 +68,6 @@ export const getCheckpointsBySite = async (
       AND is_deleted = FALSE
     ORDER BY checkpoint_number;
   `;
-  const result = await pool.query(query, [siteId]);
+  const result = await pool().query(query, [siteId]);
   return result.rows;
 };

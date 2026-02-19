@@ -1,7 +1,7 @@
 // src/controllers/stats/staffStatsController.ts
 import { RequestHandler } from 'express';
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 const parseDate = (s?: string) => (s ? new Date(s) : undefined);
 
@@ -22,7 +22,7 @@ async function resolveApplicantId(opts: {
 
   if (userIdFromHeader && companyId) {
     const q = `SELECT applicant_id FROM users WHERE id=$1 AND company_id=$2 LIMIT 1`;
-    const r = await pool.query(q, [userIdFromHeader, companyId]);
+    const r = await pool().query(q, [userIdFromHeader, companyId]);
     const applicantId = r.rows[0]?.applicant_id as number | undefined;
     if (applicantId && !Number.isNaN(applicantId)) return applicantId;
   }
@@ -198,16 +198,16 @@ export const staffStats: RequestHandler = async (req, res) => {
     };
 
     const [assigned, book, eta, today, cp, cc, hours, telem, sites, recent] = await Promise.all([
-      pool.query(q.assigned, params),
-      pool.query(q.bookOnOff, params),
-      pool.query(q.avgEta, params),
-      pool.query(q.todayCounts, [companyId, applicantId]),
-      pool.query(q.checkpointCompliance, params),
-      pool.query(q.checkCallCompliance, params),
-      pool.query(q.hoursWorked, params),
-      pool.query(q.latestTelem, [companyId, applicantId]),
-      pool.query(q.sitesServed, params),
-      pool.query(q.recent5, [companyId, applicantId]),
+      pool().query(q.assigned, params),
+      pool().query(q.bookOnOff, params),
+      pool().query(q.avgEta, params),
+      pool().query(q.todayCounts, [companyId, applicantId]),
+      pool().query(q.checkpointCompliance, params),
+      pool().query(q.checkCallCompliance, params),
+      pool().query(q.hoursWorked, params),
+      pool().query(q.latestTelem, [companyId, applicantId]),
+      pool().query(q.sitesServed, params),
+      pool().query(q.recent5, [companyId, applicantId]),
     ]);
 
     const assignedCount = assigned.rows[0]?.assigned ?? 0;

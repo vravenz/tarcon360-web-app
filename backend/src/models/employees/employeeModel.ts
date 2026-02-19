@@ -1,5 +1,5 @@
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 export const getEmployeesWithDetails = async (companyId: number): Promise<any[]> => {
     const query = `
@@ -34,7 +34,7 @@ export const getEmployeesWithDetails = async (companyId: number): Promise<any[]>
         );
     `;
     try {
-        const { rows } = await pool.query(query, [companyId]);
+        const { rows } = await pool().query(query, [companyId]);
         return rows;
     } catch (error: any) {
         throw new Error('Error fetching employees with details: ' + error.message);
@@ -59,7 +59,7 @@ export const getEmployeeDetail = async (applicantId: number): Promise<any> => {
     `;
 
     try {
-        const { rows } = await pool.query(query, [applicantId]);
+        const { rows } = await pool().query(query, [applicantId]);
         return rows[0];  // Assuming a single detailed view per applicant
     } catch (error: any) {
         throw new Error('Error fetching employee detail: ' + error.message);
@@ -67,7 +67,7 @@ export const getEmployeeDetail = async (applicantId: number): Promise<any> => {
 };
 
 export const updateEmployeeDetail = async (applicantId: number, employeeData: any): Promise<any> => {
-    const client = await pool.connect();
+    const client = await pool().connect();
 
     try {
         await client.query('BEGIN');
@@ -161,7 +161,7 @@ export const markEmployeeAsDeleted = async (applicantId: number) => {
     `;
 
     try {
-        const { rows } = await pool.query(query, [applicantId]);
+        const { rows } = await pool().query(query, [applicantId]);
         return rows[0];  // Assuming you want to return the updated row for verification
     } catch (error: any) {
         console.error("Failed to mark employee as deleted:", error);
@@ -201,7 +201,7 @@ export const getDeletedEmployeesWithDetails = async (companyId: number): Promise
         );
     `;
     try {
-        const { rows } = await pool.query(query, [companyId]);
+        const { rows } = await pool().query(query, [companyId]);
         return rows;
     } catch (error: any) {
         throw new Error('Error fetching deleted employees with details: ' + error.message);
@@ -217,7 +217,7 @@ export const restoreEmployee = async (applicantId: number) => {
     `;
 
     try {
-        const { rows } = await pool.query(query, [applicantId]);
+        const { rows } = await pool().query(query, [applicantId]);
         return rows[0];  // Return the restored employee for verification
     } catch (error: any) {
         console.error("Failed to restore employee:", error);
@@ -234,7 +234,7 @@ export const setEmployeeDormant = async (applicantId: number, dormant: boolean) 
     `;
 
     try {
-        const { rows } = await pool.query(query, [applicantId, dormant]);
+        const { rows } = await pool().query(query, [applicantId, dormant]);
         return rows[0];
     } catch (error: any) {
         console.error("Failed to update employee status:", error);
@@ -275,7 +275,7 @@ export const getDormantEmployeesWithDetails = async (companyId: number): Promise
         );
     `;
     try {
-        const { rows } = await pool.query(query, [companyId]);
+        const { rows } = await pool().query(query, [companyId]);
         return rows;
     } catch (error: any) {
         throw new Error('Error fetching dormant employees with details: ' + error.message);
@@ -310,7 +310,7 @@ export const getDirectEmployees = async (companyId: number): Promise<any[]> => {
             AND j.status = 'Accepted';
     `;
     try {
-        const { rows } = await pool.query(query, [companyId]);
+        const { rows } = await pool().query(query, [companyId]);
         return rows;
     } catch (error: any) {
         throw new Error('Error fetching direct employees: ' + error.message);
@@ -341,7 +341,7 @@ export const getSubcontractorEmployees = async (companyId: number): Promise<any[
             AND u.is_dormant = false;
     `;
     try {
-        const { rows } = await pool.query(query, [companyId]);
+        const { rows } = await pool().query(query, [companyId]);
         return rows;
     } catch (error: any) {
         throw new Error('Error fetching subcontractor employees: ' + error.message);

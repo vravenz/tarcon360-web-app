@@ -1,6 +1,6 @@
 // src/models/superAdmin/superAdminDashboardModel.ts
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 export type SuperAdminDashboardSummary = {
   core: {
@@ -119,7 +119,7 @@ export const getDashboardSummary = async (): Promise<SuperAdminDashboardSummary>
       )::int AS credit_notes_this_month
   `;
 
-  const { rows } = await pool.query(sql);
+  const { rows } = await pool().query(sql);
   const r = rows?.[0] ?? {};
 
   return {

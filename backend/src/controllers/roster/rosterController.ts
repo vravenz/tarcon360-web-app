@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { seedCheckCallsForAssignments } from '../../models/roster/rosterShiftCheckCalls';
 import { seedCheckpointsForAssignments }    from '../../models/roster/rosterShiftCheckpoints';
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 // Models
 import {
@@ -524,7 +524,7 @@ export const removeRosterShiftAssignmentController = async (req: Request, res: R
     // If company_id is not provided, try to resolve it from the assignment
     let resolved_company_id = company_id;
     if (!resolved_company_id) {
-      const result = await pool.query(
+      const result = await pool().query(
         "SELECT company_id FROM public.roster_shift_assignments WHERE roster_shift_assignment_id = $1",
         [roster_shift_assignment_id]
       );

@@ -1,6 +1,6 @@
 // models/guardGroupModel.ts
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 // Define the interface for GuardGroup
 interface GuardGroup {
@@ -25,7 +25,7 @@ export const checkIfGroupExists = async (group_name: string, branch_id: number):
         WHERE group_name = $1 AND branch_id = $2;
     `;
     try {
-        const { rows } = await pool.query(query, [group_name, branch_id]);
+        const { rows } = await pool().query(query, [group_name, branch_id]);
         return rows[0].count > 0; // If count is greater than 0, the group exists
     } catch (error: any) {
         console.error('Error checking if group exists:', error);
@@ -49,7 +49,7 @@ export const createGuardGroup = async (guardGroup: GuardGroup): Promise<any> => 
         RETURNING *;
     `;
     try {
-        const { rows } = await pool.query(query, [group_name, branch_id, created_by, company_id]);
+        const { rows } = await pool().query(query, [group_name, branch_id, created_by, company_id]);
         return rows[0];
     } catch (error: any) {
         console.error('Error creating guard group:', error);
@@ -66,7 +66,7 @@ export const fetchGroupsByCompanyId = async (company_id: number): Promise<GuardG
         ORDER BY created_at DESC;
     `;
     try {
-        const { rows } = await pool.query(query, [company_id]);
+        const { rows } = await pool().query(query, [company_id]);
         return rows;
     } catch (error: any) {
         console.error('Error fetching groups:', error);
@@ -82,7 +82,7 @@ export const addGuardsToGroup = async (group_id: number, applicant_ids: number[]
         RETURNING *;
     `;
 
-    const client = await pool.connect();
+    const client = await pool().connect();
     try {
         await client.query('BEGIN');
         const results = [];
@@ -134,7 +134,7 @@ export const fetchGuardsInGroup = async (group_id: number): Promise<any[]> => {
     `;
 
     try {
-        const { rows } = await pool.query(query, [group_id]);
+        const { rows } = await pool().query(query, [group_id]);
         return rows;
     } catch (error: any) {
         console.error('Error fetching guards in group:', error);
@@ -150,7 +150,7 @@ export const removeGuardFromGroup = async (group_id: number, applicant_id: numbe
         RETURNING *;
     `;
     try {
-        const { rows } = await pool.query(query, [group_id, applicant_id]);
+        const { rows } = await pool().query(query, [group_id, applicant_id]);
         return rows[0];
     } catch (error: any) {
         console.error('Error removing guard from group:', error);

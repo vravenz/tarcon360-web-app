@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express"
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 const router = Router()
 
@@ -15,7 +15,7 @@ function toNum(v: any): number | null {
 }
 
 async function assignmentExists(companyId: number, assignmentId: number): Promise<boolean> {
-  const { rows } = await pool.query(
+  const { rows } = await pool().query(
     `
     SELECT 1
     FROM public.roster_shift_assignments
@@ -28,7 +28,7 @@ async function assignmentExists(companyId: number, assignmentId: number): Promis
 }
 
 async function getAssignmentBookState(companyId: number, assignmentId: number) {
-  const { rows } = await pool.query(
+  const { rows } = await pool().query(
     `
     SELECT roster_shift_assignment_id, company_id, book_on_at, book_off_at
     FROM public.roster_shift_assignments
@@ -45,7 +45,7 @@ async function getAssignmentBookState(companyId: number, assignmentId: number) {
  * and still upcoming.
  */
 async function markMissedCheckCalls(assignmentId: number, tz: string) {
-  await pool.query(
+  await pool().query(
     `
     UPDATE public.roster_shift_check_calls c
     SET status = 'missed',
@@ -105,7 +105,7 @@ router.get("/", async (req: Request, res: Response) => {
     // keep DB consistent
     await markMissedCheckCalls(assignmentId, DEFAULT_TZ)
 
-    const { rows } = await pool.query(
+    const { rows } = await pool().query(
       `
       SELECT
         c.check_call_id,
@@ -205,7 +205,7 @@ router.post("/complete", async (req: Request, res: Response) => {
     }
 
     // load check call and compute window
-    const { rows } = await pool.query(
+    const { rows } = await pool().query(
       `
       SELECT
         c.check_call_id,
@@ -240,7 +240,7 @@ router.post("/complete", async (req: Request, res: Response) => {
     if (!inWindow) {
       // if already past -> mark missed
       if (now > we) {
-        await pool.query(
+        await pool().query(
           `
           UPDATE public.roster_shift_check_calls
           SET status='missed', updated_at=now()
@@ -257,7 +257,7 @@ router.post("/complete", async (req: Request, res: Response) => {
       return
     }
 
-    const done = await pool.query(
+    const done = await pool().query(
       `
       UPDATE public.roster_shift_check_calls
       SET

@@ -1,5 +1,5 @@
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 import { RosterShiftHistory } from './rosterShiftHistory';
 
 /* ===============================
@@ -63,7 +63,7 @@ export const insertRosterShiftAssignments = async (
 
   const finalQuery = insertQuery + valuesClause.join(', ') + ' RETURNING *;';
   try {
-    const { rows } = await pool.query(finalQuery, params);
+    const { rows } = await pool().query(finalQuery, params);
     return rows;
   } catch (error) {
     console.error('Error inserting shift assignments:', error);
@@ -105,7 +105,7 @@ export const insertSingleRosterShiftAssignment = async (
   ];
 
   try {
-    const result = await pool.query(query, values);
+    const result = await pool().query(query, values);
     return result.rows[0];
   } catch (error) {
     console.error('Error inserting single shift assignment:', error);
@@ -161,7 +161,7 @@ export const insertRosterShiftAssignmentHistory = async (
   ];
 
   try {
-    const { rows } = await pool.query(query, values);
+    const { rows } = await pool().query(query, values);
     return rows[0];
   } catch (error) {
     console.error('Error inserting roster shift assignment history:', error);
@@ -183,7 +183,7 @@ export const getAssignmentsByShiftId = async (
     ORDER BY roster_shift_assignment_id;
   `;
   try {
-    const { rows } = await pool.query(query, [roster_shift_id]);
+    const { rows } = await pool().query(query, [roster_shift_id]);
     return rows;
   } catch (error) {
     console.error('Error fetching shift assignments by shift_id:', error);
@@ -205,7 +205,7 @@ export const getAssignmentsByRosterId = async (
     ORDER BY rsa.roster_shift_assignment_id;
   `;
   try {
-    const { rows } = await pool.query(query, [roster_id]);
+    const { rows } = await pool().query(query, [roster_id]);
     return rows;
   } catch (error) {
     console.error('Error fetching shift assignments by roster_id:', error);
@@ -250,7 +250,7 @@ export const updateRosterShiftAssignment = async (
   ];
 
   try {
-    const { rows } = await pool.query(query, values);
+    const { rows } = await pool().query(query, values);
     if (!rows.length) {
       throw new Error(`No roster_shift_assignment found with ID ${roster_shift_assignment_id}`);
     }
@@ -272,7 +272,7 @@ export const deleteAssignmentsByRosterId = async (roster_id: number): Promise<vo
     AND rs.roster_id = $1
   `;
   try {
-    await pool.query(query, [roster_id]);
+    await pool().query(query, [roster_id]);
   } catch (error) {
     console.error('Error deleting shift assignments by roster_id:', error);
     throw error;
@@ -288,7 +288,7 @@ export const deleteRosterShiftAssignment = async (
 ): Promise<void> => {
   const query = `DELETE FROM public.roster_shift_assignments WHERE roster_shift_assignment_id = $1`;
   try {
-    await pool.query(query, [roster_shift_assignment_id]);
+    await pool().query(query, [roster_shift_assignment_id]);
   } catch (error) {
     console.error('Error deleting roster_shift_assignment:', error);
     throw error;
@@ -331,7 +331,7 @@ export const insertRosterShiftAssignmentRemoval = async (
     data.removal_reason || null,
   ];
   try {
-    const { rows } = await pool.query(query, values);
+    const { rows } = await pool().query(query, values);
     return rows[0];
   } catch (error) {
     console.error('Error inserting roster shift assignment removal:', error);
@@ -382,7 +382,7 @@ export const getActiveAssignmentsByShiftId = async (
       AND rsa.assignment_status = 'active'
     ORDER BY rsa.created_at;
   `;
-  const { rows } = await pool.query(query, [roster_shift_id]);
+  const { rows } = await pool().query(query, [roster_shift_id]);
   return rows;
 };
 
@@ -401,7 +401,7 @@ export const getRemovedAssignmentsByShiftId = async (
     WHERE rsa.roster_shift_id = $1
     ORDER BY rra.removed_at DESC;
   `;
-  const { rows } = await pool.query(query, [roster_shift_id]);
+  const { rows } = await pool().query(query, [roster_shift_id]);
   return rows;
 };
 
@@ -417,7 +417,7 @@ export const getRosterShiftHistoryByShiftId = async (
     WHERE roster_shift_id = $1
     ORDER BY changed_at DESC;
   `;
-  const { rows } = await pool.query(query, [roster_shift_id]);
+  const { rows } = await pool().query(query, [roster_shift_id]);
   return rows;
 };
 
@@ -436,6 +436,6 @@ export const getRosterShiftAssignmentHistoryByShiftId = async (
     WHERE rsa.roster_shift_id = $1
     ORDER BY rsha.changed_at DESC;
   `;
-  const { rows } = await pool.query(query, [roster_shift_id]);
+  const { rows } = await pool().query(query, [roster_shift_id]);
   return rows;
 };

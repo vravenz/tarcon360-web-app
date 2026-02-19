@@ -5,7 +5,7 @@ import { hashPassword } from '../../utils/hashUtils';
 import { createUser } from '../../models/user/userModel';
 import { sendLoginCredentialsEmail } from '../../utils/emailService';
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 // --------------------------------------------------
 // HELPER: create user + PIN + send email for offer
@@ -35,7 +35,7 @@ const createEmployeeUserForOffer = async (offerId: number) => {
   }
 
   // 3) Avoid duplicate users for same applicant
-  const existingUser = await pool.query(
+  const existingUser = await pool().query(
     'SELECT id FROM users WHERE applicant_id = $1 LIMIT 1',
     [applicantId]
   );

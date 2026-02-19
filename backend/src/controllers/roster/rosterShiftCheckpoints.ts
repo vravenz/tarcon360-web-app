@@ -2,7 +2,7 @@
 import type { RequestHandler } from 'express';
 import { Request, Response } from 'express';
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 import {
   seedCheckpointsForAssignment,
   getCheckpointsByAssignment,
@@ -17,7 +17,7 @@ export const seedCheckpointsSingle: RequestHandler = async (req, res) => {
   }
 
   try {
-    const { rows } = await pool.query(
+    const { rows } = await pool().query(
       `
       SELECT
         ra.roster_employee_id,
@@ -59,7 +59,7 @@ export const listCheckpointsForAssignment: RequestHandler = async (req, res) => 
   }
 
   try {
-    const { rows } = await pool.query(
+    const { rows } = await pool().query(
       `SELECT roster_employee_id
          FROM public.roster_shift_assignments
         WHERE roster_shift_assignment_id = $1

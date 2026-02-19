@@ -4,7 +4,7 @@ import fs from 'fs/promises';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
 import multer from 'multer';
 import { getPool } from "../../config/database"
-const pool = getPool()
+const pool = () => getPool()
 
 const UPLOAD_DIR =
   process.env.BOOK_PHOTO_DIR ||
@@ -95,14 +95,14 @@ async function updateAssignmentBookFields(opts: {
 }) {
   const { assignmentId, eventType, filename } = opts;
   if (eventType === 'book_on') {
-    await pool.query(
+    await pool().query(
       `UPDATE roster_shift_assignments
        SET book_on_photo = $1, book_on_at = NOW(), updated_at = CURRENT_TIMESTAMP
        WHERE roster_shift_assignment_id = $2`,
       [filename ?? null, assignmentId]
     );
   } else {
-    await pool.query(
+    await pool().query(
       `UPDATE roster_shift_assignments
        SET book_off_photo = $1, book_off_at = NOW(), updated_at = CURRENT_TIMESTAMP
        WHERE roster_shift_assignment_id = $2`,
