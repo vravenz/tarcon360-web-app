@@ -117,8 +117,8 @@ app.get("/api/db-check", async (_req, res) => {
   try {
     const { getPool } = await import("./config/database") // adjust path if needed
     const pool = getPool()
-    const r1 = await pool.query("select current_database() db, current_user usr, current_schema() schema")
-    const r2 = await pool.query("select to_regclass('public.users') as users_table")
+    const r1 = await pool().query("select current_database() db, current_user usr, current_schema() schema")
+    const r2 = await pool().query("select to_regclass('public.users') as users_table")
     res.json({ ok: true, info: r1.rows[0], tables: r2.rows[0] })
   } catch (e: any) {
     res.status(500).json({ ok: false, error: e?.message || String(e) })
