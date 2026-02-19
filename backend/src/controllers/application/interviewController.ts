@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import * as InterviewModel from '../../models/interview/interviewModel';
 import * as ApplicantModel from '../../models/application/applicantModel';
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 export const createInterview = async (req: Request, res: Response) => {
     const { applicationId } = req.params;

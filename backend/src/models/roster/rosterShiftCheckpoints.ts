@@ -1,5 +1,5 @@
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
+
 /* =========================================================================
    Types
    ========================================================================= */
@@ -66,7 +66,7 @@ export const seedCheckpointsForAssignment = async (
     ON CONFLICT (roster_employee_id, checkpoint_id, scheduled_date)
       DO NOTHING;
   `;
-  await pool().query(sql, [roster_employee_id, start_date, end_date, site_id]);
+  await pool.query(sql, [roster_employee_id, start_date, end_date, site_id]);
 };
 
 interface SeedPayload {
@@ -83,7 +83,7 @@ export const seedCheckpointsForAssignments = async (
   payloads: SeedPayload[]
 ): Promise<void> => {
   if (!payloads.length) return;
-  const client = await pool().connect();
+  const client = await pool.connect();
   try {
     await client.query('BEGIN');
     for (const p of payloads) {
@@ -133,7 +133,7 @@ export const seedCheckpointsForAssignments = async (
 export const getCheckpointsByAssignment = async (
   roster_employee_id: number
 ): Promise<RosterShiftCheckpoint[]> => {
-  const { rows } = await pool().query(
+  const { rows } = await pool.query(
     `
     SELECT *
       FROM public.checkpoint_scans
@@ -166,7 +166,7 @@ export const updateCheckpointStatus = async (
   if (actual_latitude  != null) params.push(actual_latitude);
   if (actual_longitude != null) params.push(actual_longitude);
 
-  await pool().query(
+  await pool.query(
     `UPDATE public.checkpoint_scans SET ${assignments} WHERE scan_id = $1;`,
     params
   );

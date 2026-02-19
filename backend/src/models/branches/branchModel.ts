@@ -1,9 +1,8 @@
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 export const getAllBranches = async () => {
     try {
-        const result = await pool().query('SELECT * FROM branches');
+        const result = await pool.query('SELECT * FROM branches');
         return result.rows;
     } catch (error: any) {
         throw new Error(`Error fetching branches: ${error.message}`);

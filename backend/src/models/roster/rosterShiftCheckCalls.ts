@@ -1,5 +1,4 @@
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 /* =========================================================================
    Types
@@ -64,7 +63,7 @@ export const seedCheckCallsForAssignment = async (
     ON CONFLICT (roster_shift_assignment_id, scheduled_date, scheduled_time)
       DO NOTHING;
   `;
-  await pool().query(sql, [
+  await pool.query(sql, [
     roster_shift_assignment_id,
     start_date,
     end_date,
@@ -87,7 +86,7 @@ export const seedCheckCallsForAssignments = async (
 ): Promise<void> => {
   if (!payloads.length) return;
 
-  const client = await pool().connect();
+  const client = await pool.connect();
   try {
     await client.query('BEGIN');
 
@@ -138,7 +137,7 @@ export const seedCheckCallsForAssignments = async (
 export const getCheckCallsByAssignment = async (
   roster_shift_assignment_id: number
 ): Promise<RosterShiftCheckCall[]> => {
-  const { rows } = await pool().query(
+  const { rows } = await pool.query(
     `
     SELECT *
       FROM public.roster_shift_check_calls
@@ -169,7 +168,7 @@ export const updateCheckCallStatus = async (
   if (actual_latitude  != null) params.push(actual_latitude);
   if (actual_longitude != null) params.push(actual_longitude);
 
-  await pool().query(
+  await pool.query(
     `UPDATE public.roster_shift_check_calls SET ${fields}
      WHERE check_call_id = $1;`,
     params

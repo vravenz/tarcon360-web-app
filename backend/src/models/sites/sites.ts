@@ -1,5 +1,4 @@
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 export interface Site {
     client_id: number;
@@ -63,7 +62,7 @@ export const insertSite = async (site: Site): Promise<Site> => {
             site_longitude,
             site_radius
         ];
-        const result = await pool().query(query, values);
+        const result = await pool.query(query, values);
         return result.rows[0];
     } catch (error) {
         console.error('Error inserting new site:', error);
@@ -82,7 +81,7 @@ export const getSite = async (siteId: number): Promise<Site | null> => {
             LEFT JOIN clients_site_groups csg ON s.group_id = csg.group_id
             WHERE s.site_id = $1;
         `;
-        const result = await pool().query(query, [siteId]);
+        const result = await pool.query(query, [siteId]);
         return result.rows[0] || null;
     } catch (error) {
         console.error('Error fetching site data:', error);
@@ -94,7 +93,7 @@ export const getSite = async (siteId: number): Promise<Site | null> => {
 export const getAllSites = async (): Promise<Site[]> => {
     try {
         const query = `SELECT *, company_id FROM sites;`;
-        const result = await pool().query(query);
+        const result = await pool.query(query);
         return result.rows;
     } catch (error) {
         console.error('Error fetching all sites:', error);
@@ -106,7 +105,7 @@ export const getAllSites = async (): Promise<Site[]> => {
 export const getSitesByClient = async (clientId: number): Promise<Site[]> => {
     try {
         const query = `SELECT * FROM sites WHERE client_id = $1;`;
-        const result = await pool().query(query, [clientId]);
+        const result = await pool.query(query, [clientId]);
         return result.rows;
     } catch (error) {
         console.error('Error fetching sites by client:', error);

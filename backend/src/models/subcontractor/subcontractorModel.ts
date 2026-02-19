@@ -1,5 +1,4 @@
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 interface SubcontractorData {
     firstName: string;
@@ -36,7 +35,7 @@ export const getSubcontractorByEmail = async (email: string) => {
             JOIN users u ON u.company_id = c.company_id
             WHERE u.email = $1 AND c.is_subcontractor = true;
         `;
-        const result = await pool().query(query, [email]);
+        const result = await pool.query(query, [email]);
         console.log(result.rows[0]);
         if (result.rows.length > 0) {
             return result.rows[0];
@@ -51,7 +50,7 @@ export const getSubcontractorByEmail = async (email: string) => {
 export const createSubcontractor = async (subcontractorData: SubcontractorData) => {
     const { firstName, lastName, companyName, companyAddress, contactPerson, contactNumber, contactDepartment, email, isSubcontractor } = subcontractorData;
     try {
-        const result = await pool().query(
+        const result = await pool.query(
             'INSERT INTO companies (first_name, last_name, company_name, company_address, contact_person, contact_number, contact_department, email, is_subcontractor) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
             [firstName, lastName, companyName, companyAddress, contactPerson, contactNumber, contactDepartment, email, isSubcontractor]
         );
@@ -70,7 +69,7 @@ export const createContractRequest = async (contractRequestData: ContractRequest
     } = contractRequestData;
 
     try {
-        await pool().query('BEGIN');
+        await pool.query('BEGIN');
 
         // Insert the contract
         const contractInsertQuery = `
@@ -82,7 +81,7 @@ export const createContractRequest = async (contractRequestData: ContractRequest
             ) VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
             RETURNING contract_id;
         `;
-        const contractResult = await pool().query(contractInsertQuery, [
+        const contractResult = await pool.query(contractInsertQuery, [
             main_company_id,
             subcontractor_company_id,
             contract_description
@@ -108,7 +107,7 @@ export const createContractRequest = async (contractRequestData: ContractRequest
             `;
 
             for (const request of employee_requests) {
-                await pool().query(employeeRequestInsertQuery, [
+                await pool.query(employeeRequestInsertQuery, [
                     contract_id,
                     request.employee_request_count,
                     request.start_date,
@@ -120,10 +119,10 @@ export const createContractRequest = async (contractRequestData: ContractRequest
             }
         }
 
-        await pool().query('COMMIT');
+        await pool.query('COMMIT');
         return contractResult.rows[0];
     } catch (error) {
-        await pool().query('ROLLBACK');
+        await pool.query('ROLLBACK');
         console.error('Error creating contract request:', error);
         throw error;
     }
@@ -144,7 +143,7 @@ export const getContractRequests = async (main_company_id: number) => {
             GROUP BY c.contract_id, comp.company_id
             ORDER BY comp.company_name;
         `;
-        const result = await pool().query(query, [main_company_id]);
+        const result = await pool.query(query, [main_company_id]);
         return result.rows;
     } catch (error) {
         console.error('Error fetching contract requests:', error);
@@ -167,8 +166,8 @@ export const getContractById = async (contractId: number) => {
     `;
 
     try {
-        const contractResult = await pool().query(contractQuery, [contractId]);
-        const employeeRequestsResult = await pool().query(employeeRequestsQuery, [contractId]);
+        const contractResult = await pool.query(contractQuery, [contractId]);
+        const employeeRequestsResult = await pool.query(employeeRequestsQuery, [contractId]);
 
         if (contractResult.rows.length) {
             const contract = contractResult.rows[0];
@@ -192,7 +191,7 @@ export const addEmployeeRequest = async (
     payRate: number
 ) => {
     try {
-        await pool().query('BEGIN');
+        await pool.query('BEGIN');
 
         const insertEmployeeRequest = `
             INSERT INTO employee_requests (
@@ -209,7 +208,7 @@ export const addEmployeeRequest = async (
             RETURNING request_id;
         `;
 
-        const result = await pool().query(insertEmployeeRequest, [
+        const result = await pool.query(insertEmployeeRequest, [
             contractId,
             employeeRequests,
             startDate,
@@ -219,10 +218,10 @@ export const addEmployeeRequest = async (
             payRate,
         ]);
 
-        await pool().query('COMMIT');
+        await pool.query('COMMIT');
         return result.rows[0];
     } catch (error) {
-        await pool().query('ROLLBACK');
+        await pool.query('ROLLBACK');
         console.error('Failed to add employee request:', error);
         throw error;
     }
@@ -242,7 +241,7 @@ export const getApplicantsByRequestId = async (requestId: number) => {
             JOIN applicants a ON ce.applicant_id = a.applicant_id
             WHERE ce.request_id = $1;
         `;
-        const result = await pool().query(query, [requestId]);
+        const result = await pool.query(query, [requestId]);
         return result.rows;
     } catch (error) {
         console.error('Failed to fetch applicants:', error);

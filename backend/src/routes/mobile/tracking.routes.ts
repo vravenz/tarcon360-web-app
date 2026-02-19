@@ -1,6 +1,6 @@
 import { Router, Request, Response } from "express"
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from "../../config/database"
+
 const router = Router()
 
 /** Build UTC timestamp from shift_date + scheduled_start_time (which is time w/o tz). */
@@ -19,7 +19,7 @@ function eventTypeFor(type: ReminderType, response: ReminderResponse) {
 }
 
 async function fetchAssignmentWindow(assignmentId: number) {
-  const { rows } = await pool().query(
+  const { rows } = await pool.query(
     `
     SELECT
       assignment_id,
@@ -42,7 +42,7 @@ async function fetchAssignmentWindow(assignmentId: number) {
 }
 
 async function getReminderState(assignmentId: number, companyId: number) {
-  const { rows } = await pool().query(
+  const { rows } = await pool.query(
     `
     SELECT
       bool_or(event_type IN ('reminder_shift_created_accept','reminder_shift_created_decline')) AS has_shift_created,
@@ -82,7 +82,7 @@ function toBool(v: any): boolean | null {
 }
 
 async function assignmentExists(companyId: number, assignmentId: number): Promise<boolean> {
-  const { rows } = await pool().query(
+  const { rows } = await pool.query(
     `
     SELECT 1
     FROM public.roster_shift_assignments
@@ -143,7 +143,7 @@ async function insertMovementLog(payload: {
     battery_pct,
     is_mock,
   ]
-  const { rows } = await pool().query(sql, values)
+  const { rows } = await pool.query(sql, values)
   return rows[0]
 }
 
@@ -157,7 +157,7 @@ async function getLatestMovementByAssignment(assignmentId: number) {
     ORDER BY recorded_at DESC
     LIMIT 1
   `
-  const { rows } = await pool().query(sql, [assignmentId])
+  const { rows } = await pool.query(sql, [assignmentId])
   return rows[0] ?? null
 }
 
@@ -181,7 +181,7 @@ async function getTrailByAssignment(assignmentId: number, sinceIso?: string, lim
     ORDER BY recorded_at DESC
     LIMIT ${safeLimit}
   `
-  const { rows } = await pool().query(sql, params)
+  const { rows } = await pool.query(sql, params)
   return rows ?? []
 }
 
@@ -274,7 +274,7 @@ router.get("/shift-ui-state", async (req: Request, res: Response): Promise<void>
     return
   }
 
-  const a = await pool().query(
+  const a = await pool.query(
     `
     SELECT created_at, book_on_at, book_off_at, eta
     FROM public.roster_shift_assignments
@@ -470,7 +470,7 @@ router.post("/reminder-confirm", async (req: Request, res: Response): Promise<vo
 
   const event_type = eventTypeFor(type as ReminderType, response as ReminderResponse)
 
-  await pool().query(
+  await pool.query(
     `
     INSERT INTO public.roster_shift_time_logs
       (company_id, roster_shift_assignment_id, event_type, event_time, event_notes, meta_json)
@@ -481,7 +481,7 @@ router.post("/reminder-confirm", async (req: Request, res: Response): Promise<vo
   )
 
   if (type === "shift_created") {
-    await pool().query(
+    await pool.query(
       `
       UPDATE public.roster_shift_assignments
       SET employee_shift_status = $1, updated_at = now()
@@ -527,7 +527,7 @@ router.post("/set-eta", async (req: Request, res: Response): Promise<void> => {
     return
   }
 
-  await pool().query(
+  await pool.query(
     `
     UPDATE public.roster_shift_assignments
     SET eta = $1, updated_at = now()
@@ -536,7 +536,7 @@ router.post("/set-eta", async (req: Request, res: Response): Promise<void> => {
     [eta, aid, cid]
   )
 
-  await pool().query(
+  await pool.query(
     `
     INSERT INTO public.roster_shift_time_logs
       (company_id, roster_shift_assignment_id, event_type, event_time, event_notes, meta_json)
@@ -572,7 +572,7 @@ router.post("/book-on", async (req: Request, res: Response): Promise<void> => {
     return
   }
 
-  await pool().query(
+  await pool.query(
     `
     UPDATE public.roster_shift_assignments
     SET book_on_at = COALESCE(book_on_at, now()),
@@ -583,7 +583,7 @@ router.post("/book-on", async (req: Request, res: Response): Promise<void> => {
     [photoPath ?? null, aid, cid]
   )
 
-  await pool().query(
+  await pool.query(
     `
     INSERT INTO public.roster_shift_time_logs
       (company_id, roster_shift_assignment_id, event_type, event_time, event_notes, meta_json)
@@ -619,7 +619,7 @@ router.post("/book-off", async (req: Request, res: Response): Promise<void> => {
     return
   }
 
-  const chk = await pool().query(
+  const chk = await pool.query(
     `
     SELECT book_on_at, book_off_at
     FROM public.roster_shift_assignments
@@ -642,7 +642,7 @@ router.post("/book-off", async (req: Request, res: Response): Promise<void> => {
     return
   }
 
-  await pool().query(
+  await pool.query(
     `
     UPDATE public.roster_shift_assignments
     SET book_off_at = now(),
@@ -654,7 +654,7 @@ router.post("/book-off", async (req: Request, res: Response): Promise<void> => {
     [photoPath ?? null, aid, cid]
   )
 
-  await pool().query(
+  await pool.query(
     `
     INSERT INTO public.roster_shift_time_logs
       (company_id, roster_shift_assignment_id, event_type, event_time, event_notes, meta_json)

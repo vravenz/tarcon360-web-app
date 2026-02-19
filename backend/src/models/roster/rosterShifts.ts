@@ -1,7 +1,6 @@
 // File: models/rosterShifts.ts
 
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 export interface RosterShift {
   roster_shift_id?: number;
@@ -94,7 +93,7 @@ export const insertRosterShifts = async (shifts: RosterShift[]): Promise<RosterS
 
   const finalQuery = insertQuery + valuesClause.join(', ') + ' RETURNING *;';
   try {
-    const { rows } = await pool().query(finalQuery, params);
+    const { rows } = await pool.query(finalQuery, params);
     return rows;
   } catch (error) {
     console.error('Error inserting roster shifts:', error);
@@ -113,7 +112,7 @@ export const getRosterShiftById = async (roster_shift_id: number): Promise<Roste
     LIMIT 1;
   `;
   try {
-    const { rows } = await pool().query(query, [roster_shift_id]);
+    const { rows } = await pool.query(query, [roster_shift_id]);
     if (rows.length === 0) return null;
     return rows[0];
   } catch (error) {
@@ -133,7 +132,7 @@ export const getRosterShiftsByRosterId = async (roster_id: number): Promise<Rost
     ORDER BY shift_date, scheduled_start_time;
   `;
   try {
-    const { rows } = await pool().query(query, [roster_id]);
+    const { rows } = await pool.query(query, [roster_id]);
     return rows;
   } catch (error) {
     console.error('Error fetching shifts by roster_id:', error);
@@ -207,7 +206,7 @@ export const updateRosterShift = async (
   ];
 
   try {
-    const { rows } = await pool().query(query, values);
+    const { rows } = await pool.query(query, values);
     if (!rows.length) throw new Error(`No shift found with ID ${roster_shift_id}`);
     return rows[0];
   } catch (error) {
@@ -225,7 +224,7 @@ export const deleteRosterShiftsByRosterId = async (roster_id: number): Promise<v
     WHERE roster_id = $1
   `;
   try {
-    await pool().query(query, [roster_id]);
+    await pool.query(query, [roster_id]);
   } catch (error) {
     console.error('Error deleting roster shifts:', error);
     throw error;
@@ -238,7 +237,7 @@ export const deleteRosterShiftsByRosterId = async (roster_id: number): Promise<v
 export const deleteRosterShift = async (roster_shift_id: number): Promise<void> => {
   const query = `DELETE FROM public.roster_shifts WHERE roster_shift_id = $1`;
   try {
-    await pool().query(query, [roster_shift_id]);
+    await pool.query(query, [roster_shift_id]);
   } catch (error) {
     console.error('Error deleting roster shift:', error);
     throw error;

@@ -1,6 +1,5 @@
 // backend/src/models/roster/assignmentList.ts
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 export interface AssignmentListRow {
   roster_shift_assignment_id: number;
@@ -45,7 +44,7 @@ async function resolveUserContext(userId: number | undefined): Promise<UserConte
     WHERE id = $1
     LIMIT 1;
   `;
-  const { rows } = await pool().query(sql, [userId]);
+  const { rows } = await pool.query(sql, [userId]);
   if (!rows.length) return null;
 
   const u = rows[0];
@@ -118,7 +117,7 @@ export const findAssignmentsForUser = async (params: FindAssignmentsParams): Pro
     LIMIT $${limIdx} OFFSET $${offIdx};
   `;
 
-  const { rows } = await pool().query(sql, values);
+  const { rows } = await pool.query(sql, values);
   return rows;
 };
 
@@ -161,6 +160,6 @@ export const countAssignmentsForUser = async (
     WHERE ${where.join(' AND ')};
   `;
 
-  const { rows } = await pool().query(sql, values);
+  const { rows } = await pool.query(sql, values);
   return rows[0]?.total ?? 0;
 };

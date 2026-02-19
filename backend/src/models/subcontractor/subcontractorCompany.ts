@@ -1,5 +1,4 @@
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 interface Contract {
     contract_id: number;
@@ -31,7 +30,7 @@ export const getContractRequestsReceivedBySubcontractor = async (subcontractor_c
             WHERE contracts.subcontractor_company_id = $1
             ORDER BY contracts.created_at DESC;
         `;
-        const result = await pool().query(query, [subcontractor_company_id]);
+        const result = await pool.query(query, [subcontractor_company_id]);
         return result.rows;
     } catch (error) {
         console.error('Error fetching contract requests received by subcontractor:', error);
@@ -47,7 +46,7 @@ export const getContractById = async (contract_id: number): Promise<Contract | n
             JOIN companies ON contracts.main_company_id = companies.company_id
             WHERE contracts.contract_id = $1;
         `;
-        const result = await pool().query(query, [contract_id]);
+        const result = await pool.query(query, [contract_id]);
         if (result.rows.length > 0) {
             return result.rows[0];
         }
@@ -72,7 +71,7 @@ export const getEmployeeRequestsByContractId = async (contract_id: number): Prom
             WHERE er.contract_id = $1
             ORDER BY er.created_at DESC;
         `;
-        const result = await pool().query(query, [contract_id]);
+        const result = await pool.query(query, [contract_id]);
         return result.rows.map(row => ({
             ...row,
             form_submitted_count: parseInt(row.form_submitted_count) // Ensure that the count is returned as an integer
@@ -90,7 +89,7 @@ export const getEmployeeRequestById = async (request_id: number): Promise<Employ
             SELECT * FROM employee_requests
             WHERE request_id = $1;
         `;
-        const result = await pool().query(query, [request_id]);
+        const result = await pool.query(query, [request_id]);
         if (result.rows.length > 0) {
             return result.rows[0];
         }
@@ -109,7 +108,7 @@ export const updateEmployeeRequestApprovalStatus = async (request_id: number, ne
             WHERE request_id = $2
             RETURNING *;
         `;
-        const result = await pool().query(query, [new_approval_status, request_id]);
+        const result = await pool.query(query, [new_approval_status, request_id]);
         if (result.rows.length > 0) {
             return result.rows[0];
         }
@@ -131,7 +130,7 @@ export const getApplicationsByRequestId = async (requestId: number): Promise<any
             JOIN applicants ap ON ap.applicant_id = a.applicant_id
             WHERE ce.request_id = $1;
         `;
-        const result = await pool().query(query, [requestId]);
+        const result = await pool.query(query, [requestId]);
         return result.rows;
     } catch (error) {
         console.error('Error fetching applications by request ID:', error);

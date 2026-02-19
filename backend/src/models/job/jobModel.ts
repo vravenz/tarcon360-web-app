@@ -1,10 +1,9 @@
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 import crypto from 'crypto';
 import { sendJobOfferEmail } from '../../utils/emailService';
 
 export const getJobOffersByCompanyId = async (companyId: number) => {
-    const result = await pool().query(
+    const result = await pool.query(
         `SELECT o.*, a.first_name, a.last_name
          FROM job_offers o
          JOIN applications ap ON o.application_id = ap.application_id
@@ -25,7 +24,7 @@ export const updateJobOfferStatus = async (offerId: number, status: string, sign
         RETURNING *;
     `;
     const values = [status, signed_on, offerId];
-    const result = await pool().query(query, values);
+    const result = await pool.query(query, values);
     return result.rows[0];
 };
 
@@ -40,7 +39,7 @@ export const createJobOffer = async (
     roleOffered: string,
     branchId: number  // New parameter for branch ID
 ) => {
-    const client = await pool().connect();
+    const client = await pool.connect();
     try {
         await client.query('BEGIN');
 
@@ -73,7 +72,7 @@ export const validateJobOfferToken = async (offerId: number, token: string): Pro
         FROM job_offers 
         WHERE offer_id = $1 AND token = $2 AND status = 'Offered'
     `;
-    const result = await pool().query(query, [offerId, token]);
+    const result = await pool.query(query, [offerId, token]);
     if (result.rows.length > 0) {
         return result.rows[0];  // return the row containing offer details
     }
@@ -86,7 +85,7 @@ export const createJob = async (
     start_date: Date | null, end_date: Date | null, is_ongoing: boolean, 
     status: string = 'Open'
 ) => {
-    const result = await pool().query(
+    const result = await pool.query(
         `INSERT INTO jobs (company_id, title, description, location, start_date, end_date, is_ongoing, status)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
         [company_id, title, description, location, start_date, end_date, is_ongoing, status]
@@ -96,7 +95,7 @@ export const createJob = async (
 
 // Job Delete
 export const deleteJobById = async (jobId: number) => {
-    const result = await pool().query(
+    const result = await pool.query(
         'DELETE FROM jobs WHERE job_id = $1 RETURNING *',
         [jobId]
     );
@@ -105,12 +104,12 @@ export const deleteJobById = async (jobId: number) => {
 
 // Job Find
 export const getJobsByCompanyId = async (company_id: number) => {
-    const result = await pool().query('SELECT * FROM jobs WHERE company_id = $1', [company_id]);
+    const result = await pool.query('SELECT * FROM jobs WHERE company_id = $1', [company_id]);
     return result.rows;
 };
 
 export const getOpenJobsByCompanyId = async (company_id: number) => {
-    const result = await pool().query(
+    const result = await pool.query(
         "SELECT * FROM jobs WHERE company_id = $1 AND status = 'Open'",
         [company_id]
     );
@@ -118,7 +117,7 @@ export const getOpenJobsByCompanyId = async (company_id: number) => {
 };
 
 export const getJobStatusById = async (jobId: number) => {
-    const result = await pool().query(
+    const result = await pool.query(
         "SELECT status FROM jobs WHERE job_id = $1",
         [jobId]
     );
@@ -132,7 +131,7 @@ export const getCompaniesWithOpenJobs = async () => {
         JOIN jobs ON companies.company_id = jobs.company_id
         WHERE jobs.status = 'Open';
     `;
-    const result = await pool().query(query);
+    const result = await pool.query(query);
     return result.rows;
 };
 
@@ -140,7 +139,7 @@ export const getCompaniesWithOpenJobs = async () => {
 
 // Job Update
 export const updateJobStatus = async (jobId: number, status: string) => {
-    const result = await pool().query(
+    const result = await pool.query(
         'UPDATE jobs SET status = $1, updated_at = NOW() WHERE job_id = $2 RETURNING *',
         [status, jobId]
     );
@@ -155,6 +154,6 @@ export const getJobOfferById = async (offerId: number) => {
         FROM job_offers
         WHERE offer_id = $1;
     `;
-    const result = await pool().query(query, [offerId]);
+    const result = await pool.query(query, [offerId]);
     return result.rows[0];
 };

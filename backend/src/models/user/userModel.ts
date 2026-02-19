@@ -1,5 +1,4 @@
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 interface User {
   id?: number;
@@ -29,7 +28,7 @@ const generateUserPin = async (): Promise<string> => {
   let exists = true;
   do {
     pin = Math.floor(10000 + Math.random() * 90000).toString();
-    const result = await pool().query('SELECT 1 FROM users WHERE user_pin = $1', [pin]);
+    const result = await pool.query('SELECT 1 FROM users WHERE user_pin = $1', [pin]);
     exists = result.rows.length > 0;
   } while (exists);
   return pin;
@@ -54,7 +53,7 @@ export const createUser = async (
    // Adjusting isMainUser based on isSubcontractor status
    isMainUser = isSubcontractor ? false : isMainUser;
 
-  const roleQuery = await pool().query('SELECT role_id FROM roles WHERE role_name = $1', [roleName]);
+  const roleQuery = await pool.query('SELECT role_id FROM roles WHERE role_name = $1', [roleName]);
   const roleId = roleQuery.rows.length > 0 ? roleQuery.rows[0].role_id : null;
   if (!roleId) {
     throw new Error(`Role '${roleName}' not found in roles table`);
@@ -62,7 +61,7 @@ export const createUser = async (
 
   // Only fetch default branch ID if not provided
   if (branchId === null) {
-    const branchQuery = await pool().query('SELECT branch_id FROM branches WHERE branch_name = $1', ['Head Office']);
+    const branchQuery = await pool.query('SELECT branch_id FROM branches WHERE branch_name = $1', ['Head Office']);
     branchId = branchQuery.rows.length > 0 ? branchQuery.rows[0].branch_id : null;
     if (!branchId) {
       throw new Error('Default branch "Head Office" not found in branches table. Please ensure the branch is created first.');
@@ -70,7 +69,7 @@ export const createUser = async (
   }
 
   const userPin = await generateUserPin();
-  const result = await pool().query(
+  const result = await pool.query(
     'INSERT INTO users (email, password, role_id, company_id, user_pin, is_main_user, is_active, is_dormant, applicant_id, is_subcontractor_employee, is_subcontractor, is_deleted, branch_id, current_assigned_company_id) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING *',
     [email, password, roleId, companyId, userPin, isMainUser, isActive, isDormant, applicantId, isSubcontractorEmployee, isSubcontractor, isDeleted, branchId, currentAssignedCompanyId]
   );
@@ -104,6 +103,6 @@ export const findUserByEmailOrPin = async (identifier: string): Promise<User | n
         AND u.is_deleted = false
       LIMIT 1
     `;
-  const result = await pool().query(query, [identifier]);
+  const result = await pool.query(query, [identifier]);
   return result.rows.length > 0 ? result.rows[0] : null;
 };

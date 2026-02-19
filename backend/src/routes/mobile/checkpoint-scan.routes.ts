@@ -1,8 +1,7 @@
 // src/routes/mobile/checkpoint-scan.routes.ts
 
 import { Router, type RequestHandler } from "express"
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from "../../config/database"
 
 const router = Router()
 
@@ -36,7 +35,7 @@ const listHandler: RequestHandler = async (req, res) => {
     }
 
     // ✅ roster_shifts has roster_id, roster has site_id
-    const a = await pool().query(
+    const a = await pool.query(
       `
       SELECT
         rsa.roster_shift_assignment_id,
@@ -64,7 +63,7 @@ const listHandler: RequestHandler = async (req, res) => {
 
     const { site_id, roster_employee_id, book_on_at, book_off_at } = a.rows[0]
 
-    const cps = await pool().query(
+    const cps = await pool.query(
       `
       SELECT
         sc.checkpoint_id,
@@ -81,7 +80,7 @@ const listHandler: RequestHandler = async (req, res) => {
       [site_id]
     )
 
-    const scans = await pool().query(
+    const scans = await pool.query(
       `
       SELECT
         checkpoint_id,
@@ -150,7 +149,7 @@ const scanHandler: RequestHandler = async (req, res) => {
     }
 
     // ✅ same join pattern
-    const a = await pool().query(
+    const a = await pool.query(
       `
       SELECT
         rsa.roster_shift_assignment_id,
@@ -192,7 +191,7 @@ const scanHandler: RequestHandler = async (req, res) => {
       return
     }
 
-    const cp = await pool().query(
+    const cp = await pool.query(
       `
       SELECT
         checkpoint_id,
@@ -214,7 +213,7 @@ const scanHandler: RequestHandler = async (req, res) => {
 
     const checkpoint = cp.rows[0]
 
-    const insert = await pool().query(
+    const insert = await pool.query(
       `
       INSERT INTO public.checkpoint_scans
         (checkpoint_id, roster_employee_id, scheduled_time, actual_time, status,

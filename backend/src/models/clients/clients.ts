@@ -1,5 +1,4 @@
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from "../../config/database"
 
 export interface Client {
   client_name: string
@@ -114,7 +113,7 @@ export const insertClient = async (client: Client): Promise<Client> => {
       company_id,
     ]
 
-    const result = await pool().query(query, values)
+    const result = await pool.query(query, values)
     return result.rows[0]
   } catch (error) {
     console.error("Error inserting new client:", error)
@@ -128,7 +127,7 @@ export const getClientsByCompanyId = async (company_id: number): Promise<Client[
     const query = `
       SELECT * FROM clients WHERE company_id = $1 AND is_deleted = false;
     `
-    const result = await pool().query(query, [company_id])
+    const result = await pool.query(query, [company_id])
     return result.rows
   } catch (error) {
     console.error("Error fetching clients:", error)
@@ -143,7 +142,7 @@ export const getClientById = async (company_id: number, client_id: number): Prom
       SELECT * FROM clients
       WHERE company_id = $1 AND client_id = $2 AND is_deleted = false;
     `
-    const result = await pool().query(query, [company_id, client_id])
+    const result = await pool.query(query, [company_id, client_id])
     return result.rows.length > 0 ? result.rows[0] : null
   } catch (error) {
     console.error("Error fetching client details:", error)
@@ -178,7 +177,7 @@ export const insertClientSiteGroup = async (group: ClientSiteGroup): Promise<Cli
       payable_guard_rate,
       payable_supervisor_rate,
     ]
-    const result = await pool().query(query, values)
+    const result = await pool.query(query, values)
     return result.rows[0]
   } catch (error) {
     console.error("Error inserting new client group:", error)
@@ -193,7 +192,7 @@ export const getClientSiteGroups = async (client_id: number): Promise<ClientSite
       SELECT * FROM clients_site_groups
       WHERE client_id = $1;
     `
-    const result = await pool().query(query, [client_id])
+    const result = await pool.query(query, [client_id])
     return result.rows
   } catch (error) {
     console.error("Error fetching client site groups:", error)
@@ -277,7 +276,7 @@ export const updateClient = async (
       computedVatReg ?? null,
     ]
 
-    const result = await pool().query(query, values)
+    const result = await pool.query(query, values)
     return result.rows.length ? result.rows[0] : null
   } catch (error) {
     console.error("Error updating client:", error)
@@ -312,7 +311,7 @@ export const updateClientSiteGroup = async (
       patch.payable_guard_rate ?? null,
       patch.payable_supervisor_rate ?? null,
     ]
-    const result = await pool().query(query, values)
+    const result = await pool.query(query, values)
     return result.rows.length ? result.rows[0] : null
   } catch (error) {
     console.error("Error updating client site group:", error)
@@ -326,7 +325,7 @@ export const deleteClientSiteGroup = async (
 ): Promise<{ ok: true }> => {
   try {
     const query = `DELETE FROM clients_site_groups WHERE client_id = $1 AND group_id = $2;`
-    await pool().query(query, [client_id, group_id])
+    await pool.query(query, [client_id, group_id])
     return { ok: true }
   } catch (error) {
     console.error("Error deleting client site group:", error)
@@ -357,7 +356,7 @@ export const getClientAssignedGuards = async (client_id: number): Promise<Client
       WHERE s.client_id = $1
       ORDER BY a.first_name ASC, a.last_name ASC;
     `
-    const result = await pool().query(query, [client_id])
+    const result = await pool.query(query, [client_id])
     return result.rows
   } catch (error) {
     console.error("Error fetching client assigned guards:", error)
@@ -402,7 +401,7 @@ export const getCompanyApplicantsForClient = async (client_id: number): Promise<
     ORDER BY a.first_name ASC, a.last_name ASC;
   `
 
-  const r = await pool().query(q, [client_id])
+  const r = await pool.query(q, [client_id])
   return r.rows
 }
 
@@ -455,7 +454,7 @@ export const setApplicantBlockedForClient = async (
     FROM upsert;
   `
 
-  const r = await pool().query(q, [client_id, applicant_id, blocked])
+  const r = await pool.query(q, [client_id, applicant_id, blocked])
   if (!r.rows?.length) throw new Error("Unable to update block status (client not found?)")
   return r.rows[0]
 }
@@ -479,7 +478,7 @@ export const setApplicantUserActiveStatus = async (
       WHERE applicant_id = $1 AND is_deleted = false
       RETURNING is_active, is_dormant;
     `
-    const result = await pool().query(query, [applicant_id, is_active])
+    const result = await pool.query(query, [applicant_id, is_active])
     return result.rows.length ? result.rows[0] : null
   } catch (error) {
     console.error("Error updating user active status:", error)

@@ -1,6 +1,5 @@
 import express from 'express';
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 interface InterviewData {
     interview_date: Date;
@@ -11,7 +10,7 @@ interface InterviewData {
 
 
 export const scheduleInterview = async (applicationId: number, interviewData: InterviewData): Promise<any> => {
-    const client = await pool().connect();
+    const client = await pool.connect();
     try {
         await client.query('BEGIN');
 
@@ -47,7 +46,7 @@ export const scheduleInterview = async (applicationId: number, interviewData: In
 };
 
 export const findInterviewsByCompanyId = async (companyId: number) => {
-    const client = await pool().connect();
+    const client = await pool.connect();
     try {
         const query = `
             SELECT i.*, a.first_name, a.last_name, j.title as job_title
@@ -76,6 +75,6 @@ export const updateInterviewOutcome = async (interviewId: number, outcome: strin
         RETURNING *;
     `;
     const values = [outcome, interviewId];
-    const result = await pool().query(query, values);
+    const result = await pool.query(query, values);
     return result.rows[0];
 };

@@ -1,5 +1,4 @@
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 export const createApplicantAndApplication = async (
     company_id: number, 
@@ -35,7 +34,7 @@ export const createApplicantAndApplication = async (
     criminal_record_details: string | null,
     submitted_by_subcontractor: boolean,
 ) => {
-    const client = await pool().connect();
+    const client = await pool.connect();
     try {
         await client.query('BEGIN');
 
@@ -103,7 +102,7 @@ export const findApplicationsByCompanyId = async (companyId: number) => {
         LEFT JOIN job_offers ON applications.application_id = job_offers.application_id
         WHERE jobs.company_id = $1;
     `;
-    const { rows } = await pool().query(query, [companyId]);
+    const { rows } = await pool.query(query, [companyId]);
     return rows;
 };
 
@@ -115,7 +114,7 @@ export const findApplicationById = async (applicationId: number) => {
         JOIN applicants ON applications.applicant_id = applicants.applicant_id
         WHERE applications.application_id = $1;
     `;
-    const { rows } = await pool().query(query, [applicationId]);
+    const { rows } = await pool.query(query, [applicationId]);
     return rows[0];
 };
 
@@ -128,7 +127,7 @@ export const findShortlistedApplicationsByCompanyId = async (companyId: number) 
         JOIN applicants ON applications.applicant_id = applicants.applicant_id
         WHERE jobs.company_id = $1 AND applications.application_status = 'Shortlisted';
     `;
-    const { rows } = await pool().query(query, [companyId]);
+    const { rows } = await pool.query(query, [companyId]);
     return rows;
 };
 
@@ -140,7 +139,7 @@ export const findPassedApplicantsByCompanyId = async (companyId: number) => {
             JOIN applicants ap ON a.applicant_id = ap.applicant_id
             WHERE ap.company_id = $1 AND a.application_status = 'Passed';
         `;
-        const { rows } = await pool().query(query, [companyId]);
+        const { rows } = await pool.query(query, [companyId]);
         return rows;
     } catch (error) {
         console.error("Error in findPassedApplicantsByCompanyId:", error); // Log the error
@@ -157,7 +156,7 @@ export const updateApplicationStatus = async (applicationId: number, status: str
         RETURNING *;
     `;
     const values = [status, applicationId];
-    const result = await pool().query(query, values);
+    const result = await pool.query(query, values);
     return result.rows[0];
 };
 
@@ -193,7 +192,7 @@ export const createApplicant = async (
     criminal_record: string | null,
     criminal_record_details: string | null
 ) => {
-    const client = await pool().connect();
+    const client = await pool.connect();
     try {
         const insertApplicant = `
             INSERT INTO applicants (
@@ -222,7 +221,7 @@ export const createApplicant = async (
 };
 
 export const createApplication = async (job_id: number, applicant_id: number) => {
-    const client = await pool().connect();
+    const client = await pool.connect();
     try {
         const insertApplication = `
             INSERT INTO applications (job_id, applicant_id, application_status)

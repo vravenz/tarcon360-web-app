@@ -1,7 +1,6 @@
 // File: models/roster/rosterEmployees.ts
 
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 export interface RosterEmployee {
   roster_employee_id?: number;
@@ -56,7 +55,7 @@ export const insertRosterEmployees = async (
 
   const finalQuery = insertQuery + valuesClause.join(', ') + ' RETURNING *;';
   try {
-    const result = await pool().query(finalQuery, params);
+    const result = await pool.query(finalQuery, params);
     return result.rows;
   } catch (error) {
     console.error('Error inserting roster employees:', error);
@@ -76,7 +75,7 @@ export const getRosterEmployeeById = async (roster_employee_id: number): Promise
     LIMIT 1;
   `;
   try {
-    const { rows } = await pool().query(query, [roster_employee_id]);
+    const { rows } = await pool.query(query, [roster_employee_id]);
     if (rows.length === 0) {
       throw new Error(`No roster_employee found with ID ${roster_employee_id}`);
     }
@@ -99,7 +98,7 @@ export const getRosterEmployeesByRosterId = async (roster_id: number): Promise<R
     ORDER BY re.roster_employee_id;
   `;
   try {
-    const { rows } = await pool().query(query, [roster_id]);
+    const { rows } = await pool.query(query, [roster_id]);
     return rows;
   } catch (error) {
     console.error('Error fetching employees by roster_id:', error);
@@ -136,7 +135,7 @@ export const updateRosterEmployee = async (
   ];
 
   try {
-    const { rows } = await pool().query(query, values);
+    const { rows } = await pool.query(query, values);
     if (rows.length === 0) {
       throw new Error(`No roster_employee found with ID ${roster_employee_id}`);
     }
@@ -153,7 +152,7 @@ export const updateRosterEmployee = async (
 export const deleteRosterEmployeesByRosterId = async (roster_id: number): Promise<void> => {
   const query = `DELETE FROM public.roster_employees WHERE roster_id = $1`;
   try {
-    await pool().query(query, [roster_id]);
+    await pool.query(query, [roster_id]);
   } catch (error) {
     console.error('Error deleting roster employees:', error);
     throw error;
@@ -166,7 +165,7 @@ export const deleteRosterEmployeesByRosterId = async (roster_id: number): Promis
 export const deleteRosterEmployee = async (roster_employee_id: number): Promise<void> => {
   const query = `DELETE FROM public.roster_employees WHERE roster_employee_id = $1`;
   try {
-    await pool().query(query, [roster_employee_id]);
+    await pool.query(query, [roster_employee_id]);
   } catch (error) {
     console.error('Error deleting roster employee:', error);
     throw error;
@@ -201,7 +200,7 @@ export const insertSingleRosterEmployee = async (
   ];
 
   try {
-    const result = await pool().query(query, values);
+    const result = await pool.query(query, values);
     return result.rows[0];
   } catch (error) {
     console.error('Error inserting single roster employee:', error);

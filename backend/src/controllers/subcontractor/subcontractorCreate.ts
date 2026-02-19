@@ -1,8 +1,7 @@
 // File: src/controllers/subcontractors/subcontractorCreate.ts
 
 import { Request, Response } from 'express';
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 import { hashPassword } from '../../utils/hashUtils';
 import { createUser } from '../../models/user/userModel';
 
@@ -11,7 +10,7 @@ import { createUser } from '../../models/user/userModel';
  */
 async function checkEmailExists(email: string): Promise<boolean> {
   const emailCheckQuery = 'SELECT 1 FROM users WHERE email = $1';
-  const result = await pool().query(emailCheckQuery, [email]);
+  const result = await pool.query(emailCheckQuery, [email]);
   return ((result.rowCount ?? 0) > 0);
 }
 
@@ -20,7 +19,7 @@ async function checkEmailExists(email: string): Promise<boolean> {
  */
 async function checkCompanyNameExists(companyName: string): Promise<boolean> {
   const nameCheckQuery = 'SELECT 1 FROM companies WHERE LOWER(company_name) = LOWER($1)';
-  const result = await pool().query(nameCheckQuery, [companyName]);
+  const result = await pool.query(nameCheckQuery, [companyName]);
   return ((result.rowCount ?? 0) > 0);
 }
 
@@ -73,7 +72,7 @@ async function createSubcontractorCompany(
     vatRegistrationNumber
   ];
 
-  const result = await pool().query(insertQuery, values);
+  const result = await pool.query(insertQuery, values);
   return result.rows[0];
 }
 

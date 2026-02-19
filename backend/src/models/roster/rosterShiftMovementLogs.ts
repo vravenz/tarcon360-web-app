@@ -1,5 +1,4 @@
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 
 export type TelemetryInsert = {
   company_id: number;
@@ -52,7 +51,7 @@ export async function insertMovementLog(payload: TelemetryInsert) {
     battery_pct,
     is_mock,
   ];
-  const { rows } = await pool().query(sql, values);
+  const { rows } = await pool.query(sql, values);
   return rows[0];
 }
 
@@ -66,7 +65,7 @@ export async function getLatestMovementByAssignment(assignmentId: number) {
     ORDER BY recorded_at DESC
     LIMIT 1
   `;
-  const { rows } = await pool().query(sql, [assignmentId]);
+  const { rows } = await pool.query(sql, [assignmentId]);
   return rows[0] ?? null;
 }
 
@@ -92,6 +91,6 @@ export async function getTrailByAssignment(
     ORDER BY recorded_at DESC
     LIMIT ${Number.isFinite(limit) ? limit : 200}
   `;
-  const { rows } = await pool().query(sql, params);
+  const { rows } = await pool.query(sql, params);
   return rows;
 }

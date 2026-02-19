@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { getSubcontractorByEmail, createSubcontractor, createContractRequest, getContractRequests, getContractById, addEmployeeRequest, getApplicantsByRequestId } from '../../models/subcontractor/subcontractorModel';
-import { getPool } from "../../config/database"
-const pool = () => getPool()
+import pool from '../../config/database';
 import { hashPassword } from '../../utils/hashUtils';
 import { createUser } from '../../models/user/userModel';
 import { sendLoginCredentialsEmail } from '../../utils/emailService';
@@ -50,7 +49,7 @@ export const sendContractRequest = async (req: Request, res: Response): Promise<
             SELECT * FROM contracts
             WHERE main_company_id = $1 AND subcontractor_company_id = $2;
         `;
-        const existingContracts = await pool().query(existingContractQuery, [main_company_id, subcontractor_company_id]);
+        const existingContracts = await pool.query(existingContractQuery, [main_company_id, subcontractor_company_id]);
         
         if ((existingContracts.rowCount || 0) > 0) {
             res.status(409).send('A contract with this subcontractor already exists.');
@@ -163,7 +162,7 @@ export const updateApplicantStatus = async (req: Request, res: Response): Promis
             SET status = $1
             WHERE applicant_id = $2 RETURNING *;
         `;
-        const updateResult = await pool().query(updateQuery, [status, applicantId]);
+        const updateResult = await pool.query(updateQuery, [status, applicantId]);
 
         if (status === 'Accepted' && updateResult.rows.length > 0) {
             const employee = updateResult.rows[0];
@@ -173,7 +172,7 @@ export const updateApplicantStatus = async (req: Request, res: Response): Promis
                 FROM applicants
                 WHERE applicant_id = $1;
             `;
-            const applicantResult = await pool().query(applicantQuery, [employee.applicant_id]);
+            const applicantResult = await pool.query(applicantQuery, [employee.applicant_id]);
             if (applicantResult.rows.length === 0) {
                 res.status(404).send('Applicant not found.');
                 return;
