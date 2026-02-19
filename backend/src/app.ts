@@ -105,6 +105,27 @@ if (process.env.NODE_ENV !== "production") {
   app.use("/uploads", express.static(path.join(__dirname, "../src/uploads")))
 }
 
+app.get("/api/health", (_req, res) => {
+  res.json({
+    ok: true,
+    node_env: process.env.NODE_ENV,
+    has_database_url: !!process.env.DATABASE_URL,
+  })
+})
+
+app.get("/api/db-check", async (_req, res) => {
+  try {
+    const { getPool } = await import("./config/database") // adjust path if needed
+    const pool = getPool()
+    const r1 = await pool.query("select current_database() db, current_user usr, current_schema() schema")
+    const r2 = await pool.query("select to_regclass('public.users') as users_table")
+    res.json({ ok: true, info: r1.rows[0], tables: r2.rows[0] })
+  } catch (e: any) {
+    res.status(500).json({ ok: false, error: e?.message || String(e) })
+  }
+})
+
+
 app.get("/", (_req, res) => res.status(200).send("Tarcon360 API running"))
 
 export default app
