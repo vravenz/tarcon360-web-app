@@ -120,10 +120,16 @@ app.get("/api/db-check", async (_req, res) => {
     const r2 = await pool.query("select to_regclass('public.users') as users_table")
     res.json({ ok: true, info: r1.rows[0], tables: r2.rows[0] })
   } catch (e: any) {
-    res.status(500).json({ ok: false, error: e?.message || String(e) })
+    res.status(500).json({
+      ok: false,
+      message: e?.message,
+      code: e?.code,
+      detail: e?.detail,
+      hint: e?.hint,
+      stack: e?.stack,
+    })
   }
 })
-
 
 
 app.get("/", (_req, res) => res.status(200).send("Tarcon360 API running"))
